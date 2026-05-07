@@ -82,6 +82,57 @@ button.secondary:hover {
   margin: 0 0 10px;
 }
 
+.seo-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+  gap: 22px;
+  align-items: stretch;
+  margin-bottom: 26px;
+}
+
+.seo-copy,
+.how-to {
+  border: 1px solid #d8d0bf;
+  border-radius: 8px;
+  background: #fbfaf6;
+  padding: 18px 20px;
+}
+
+.seo-copy {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+
+.seo-copy p {
+  margin: 0;
+  color: #536152;
+  max-width: 760px;
+}
+
+.seo-copy p:first-child {
+  color: #263126;
+  font-weight: 800;
+}
+
+.how-to h2 {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+}
+
+.how-to ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: #536152;
+}
+
+.how-to li::marker {
+  color: #214b3f;
+  font-weight: 900;
+}
+
 .summary-panel {
   border: 1px solid #d8d0bf;
   border-radius: 8px;
@@ -562,7 +613,8 @@ td:last-child {
 
 @media (max-width: 1100px) {
   .workspace,
-  .intro {
+  .intro,
+  .seo-overview {
     grid-template-columns: 1fr;
   }
 

@@ -370,6 +370,18 @@ const UI_TEXT = {
     title: "Classify and compare soil texture samples",
     subtitle:
       "Enter sand, silt, and clay percentages for one or many samples. Valid rows are classified and plotted together on the USDA triangle.",
+    seoLead:
+      "The USDA soil texture triangle is a standard diagram for identifying soil texture classes from the relative proportions of sand, silt, and clay.",
+    seoBody:
+      "Use this free soil texture calculator to classify and compare samples for agronomy, pedology, irrigation studies, soil laboratories, and environmental consulting.",
+    howToTitle: "How to use",
+    howToSteps: [
+      "Enter sand, silt, and clay percentages.",
+      "Make sure the total equals 100%.",
+      "Add one or multiple samples.",
+      "Compare them on the USDA triangle.",
+      "Export the result when needed.",
+    ],
     language: "Language",
     samplesEntered: "samples entered",
     validForPlotting: "valid for plotting",
@@ -423,6 +435,18 @@ const UI_TEXT = {
     title: "Classer et comparer des echantillons de sol",
     subtitle:
       "Saisissez les pourcentages de sable, limon et argile pour un ou plusieurs echantillons. Les lignes valides sont classees et tracees ensemble sur le triangle USDA.",
+    seoLead:
+      "Le triangle textural USDA est un diagramme de reference pour identifier les classes texturales d'un sol a partir des proportions de sable, limon et argile.",
+    seoBody:
+      "Utilisez ce calculateur gratuit pour classer et comparer des echantillons en agronomie, pedologie, etudes d'irrigation, laboratoires de sols et conseil environnemental.",
+    howToTitle: "Mode d'emploi",
+    howToSteps: [
+      "Saisissez les pourcentages de sable, limon et argile.",
+      "Verifiez que le total est egal a 100 %.",
+      "Ajoutez un ou plusieurs echantillons.",
+      "Comparez-les sur le triangle USDA.",
+      "Exportez le resultat si necessaire.",
+    ],
     language: "Langue",
     samplesEntered: "echantillons saisis",
     validForPlotting: "valides pour le trace",
@@ -795,6 +819,21 @@ function App() {
               {validSamples.length} {t.validForPlotting}
             </strong>
           </div>
+        </div>
+      </section>
+
+      <section className="seo-overview" aria-label={t.howToTitle}>
+        <div className="seo-copy">
+          <p>{t.seoLead}</p>
+          <p>{t.seoBody}</p>
+        </div>
+        <div className="how-to">
+          <h2>{t.howToTitle}</h2>
+          <ol>
+            {t.howToSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
         </div>
       </section>
 
