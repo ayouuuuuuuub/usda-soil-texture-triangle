@@ -1,4 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, Route, Routes, useParams } from "react-router-dom";
+import { articles, findArticleBySlug } from "./data/articles";
 import {
   TRIANGLE,
   buildAnalyticalBoundaryPath,
@@ -382,6 +384,11 @@ const UI_TEXT = {
       "Compare them on the USDA triangle.",
       "Export the result when needed.",
     ],
+    exploreTitle: "Explore USDA Soil Texture Classes",
+    exploreIntro:
+      "Read short guides for each USDA soil texture class and expand them into full articles over time.",
+    allArticles: "All articles",
+    readArticle: "Read article",
     language: "Language",
     samplesEntered: "samples entered",
     validForPlotting: "valid for plotting",
@@ -447,6 +454,11 @@ const UI_TEXT = {
       "Comparez-les sur le triangle USDA.",
       "Exportez le resultat si necessaire.",
     ],
+    exploreTitle: "Explorer les classes texturales USDA",
+    exploreIntro:
+      "Consultez de courts guides pour chaque classe texturale USDA et completez-les progressivement.",
+    allArticles: "Tous les articles",
+    readArticle: "Lire l'article",
     language: "Langue",
     samplesEntered: "echantillons saisis",
     validForPlotting: "valides pour le trace",
@@ -677,7 +689,11 @@ function csvCell(value: string | number) {
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-function App() {
+function HomePage() {
+  useEffect(() => {
+    document.title = "USDA Soil Texture Triangle Tool | Free Soil Texture Calculator";
+  }, []);
+
   const [locale, setLocale] = useState<Locale>("en");
   const [samples, setSamples] = useState<Sample[]>(INITIAL_SAMPLES);
   const [lastEditedFields, setLastEditedFields] = useState<Record<string, FractionField[]>>({});
@@ -1000,7 +1016,171 @@ function App() {
           </table>
         </div>
       </section>
+
+      <section className="article-teaser-section">
+        <div className="section-heading">
+          <div>
+            <h2>{t.exploreTitle}</h2>
+            <p>{t.exploreIntro}</p>
+          </div>
+          <Link className="text-link" to="/articles">
+            {t.allArticles}
+          </Link>
+        </div>
+        <div className="article-card-grid">
+          {articles.map((article) => (
+            <article className="article-card" key={article.slug}>
+              <p className="article-kicker">{article.textureClass}</p>
+              <h3>{article.title}</h3>
+              <p>{article.excerpt}</p>
+              <Link to={`/articles/${article.slug}`}>{t.readArticle}</Link>
+            </article>
+          ))}
+        </div>
+      </section>
     </main>
+  );
+}
+
+function ArticlesIndexPage() {
+  useEffect(() => {
+    document.title = "USDA Soil Texture Class Articles | Soil Texture Triangle Guides";
+  }, []);
+
+  return (
+    <main className="app-shell article-shell">
+      <nav className="article-nav" aria-label="Article navigation">
+        <Link to="/">Back to calculator</Link>
+      </nav>
+      <header className="article-header">
+        <p className="eyebrow">USDA soil texture classes</p>
+        <h1>USDA Soil Texture Class Articles</h1>
+        <p>
+          Browse internal draft guides for the 12 USDA soil texture classes. Each article can be
+          expanded over time with practical notes for soil classification, pedology, agronomy,
+          irrigation, drainage, and water retention.
+        </p>
+      </header>
+      <section className="article-card-grid article-index-grid" aria-label="Article list">
+        {articles.map((article) => (
+          <article className="article-card" key={article.slug}>
+            <p className="article-kicker">{article.textureClass}</p>
+            <h2>{article.title}</h2>
+            <p>{article.excerpt}</p>
+            <div className="article-meta">
+              <span>{article.date}</span>
+              <span>{article.readingTime}</span>
+            </div>
+            <Link to={`/articles/${article.slug}`}>Read article</Link>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}
+
+function ArticlePage() {
+  const { slug } = useParams();
+  const article = slug ? findArticleBySlug(slug) : undefined;
+  const featureArticle = article as
+    | (typeof article & {
+        feature?: {
+          label: string;
+          subtitle: string;
+          meta: string[];
+          html: string;
+        };
+      })
+    | undefined;
+
+  useEffect(() => {
+    document.title = article
+      ? `${article.title} | USDA Soil Texture Triangle`
+      : "Article not found | USDA Soil Texture Triangle";
+  }, [article]);
+
+  if (!article) {
+    return (
+      <main className="app-shell article-shell">
+        <nav className="article-nav" aria-label="Article navigation">
+          <Link to="/">Back to calculator</Link>
+          <Link to="/articles">All articles</Link>
+        </nav>
+        <section className="article-page not-found-panel">
+          <h1>Article not found</h1>
+          <p>The requested USDA soil texture class article does not exist yet.</p>
+          <Link className="text-link" to="/articles">
+            Back to articles
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="app-shell article-shell">
+      <nav className="article-nav" aria-label="Article navigation">
+        <Link to="/">Back to calculator</Link>
+        <Link to="/articles">All articles</Link>
+      </nav>
+      {featureArticle?.feature ? (
+        <article className="feature-article">
+          <header className="feature-hero">
+            <p>{featureArticle.feature.label}</p>
+            <h1>
+              The <em>{article.textureClass}</em> Textural Class
+            </h1>
+            <span>{featureArticle.feature.subtitle}</span>
+          </header>
+          <div className="feature-meta-bar">
+            {featureArticle.feature.meta.map((item: string) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+          <div
+            className="feature-article-body"
+            dangerouslySetInnerHTML={{ __html: featureArticle.feature.html }}
+          />
+        </article>
+      ) : (
+        <article className="article-page">
+          <header>
+            <p className="eyebrow">{article.textureClass} texture class</p>
+            <h1>{article.title}</h1>
+            <p>{article.excerpt}</p>
+            <div className="article-meta">
+              <span>{article.date}</span>
+              <span>{article.readingTime}</span>
+            </div>
+          </header>
+          {article.sections.map((section) => (
+            <section key={section.heading}>
+              <h2>{section.heading}</h2>
+              {section.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+              {section.bullets?.length ? (
+                <ul>
+                  {section.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ))}
+        </article>
+      )}
+    </main>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/articles" element={<ArticlesIndexPage />} />
+      <Route path="/articles/:slug" element={<ArticlePage />} />
+    </Routes>
   );
 }
 

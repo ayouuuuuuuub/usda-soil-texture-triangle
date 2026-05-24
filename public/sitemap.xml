@@ -5,4 +5,21 @@
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://usda-soil-texture-triangle.vercel.app/articles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/sand</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/loamy-sand</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/sandy-loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/silt-loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/silt</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/sandy-clay-loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/clay-loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/silty-clay-loam</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/sandy-clay</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/silty-clay</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://usda-soil-texture-triangle.vercel.app/articles/clay</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>
