@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Route, Routes, useParams } from "react-router-dom";
 import { articles, findArticleBySlug } from "./data/articles";
+import Portfolio from "./portfolio/Portfolio";
 import {
   TRIANGLE,
   buildAnalyticalBoundaryPath,
@@ -809,6 +810,10 @@ function HomePage() {
 
   return (
     <main className="app-shell">
+      <div className="consultant-callout">
+        <Link className="consultant-link" to="/portfolio" aria-describedby="consultant-specialties">Need a consultant?</Link>
+        <p id="consultant-specialties">Soil science, agronomy &amp; environment</p>
+      </div>
       <section className="intro">
         <div>
           <p className="eyebrow">{t.eyebrow}</p>
@@ -1178,6 +1183,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/portfolio" element={<Portfolio />} />
       <Route path="/articles" element={<ArticlesIndexPage />} />
       <Route path="/articles/:slug" element={<ArticlePage />} />
     </Routes>

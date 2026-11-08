@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520">
+<defs><clipPath id="core"><rect x="136" y="50" width="208" height="398" rx="5"/></clipPath>
+<pattern id="grains" width="17" height="19" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r="1.4" fill="#756345"/><path d="m11 12 3 2" stroke="#887252"/></pattern>
+<pattern id="fine" width="12" height="9" patternUnits="userSpaceOnUse"><path d="M2 4h6" stroke="#a28e60" stroke-width=".6"/></pattern></defs>
+<g clip-path="url(#core)"><path d="M136 50H344V450H136Z" fill="#d5c49b"/>
+<path d="M136 50H344V122Q282 143 233 120T136 134Z" fill="#52644a"/>
+<path d="M136 134Q185 106 233 120T344 122V227Q300 202 237 224T136 215Z" fill="#a28b61"/>
+<path d="M136 215Q185 241 237 224T344 227V330Q280 316 230 338T136 323Z" fill="#c4b07d"/>
+<rect x="136" y="138" width="208" height="190" fill="url(#grains)" opacity=".6"/>
+<path d="M136 323Q180 362 230 338T344 330V450H136Z" fill="url(#fine)"/>
+<g fill="none" stroke="#ced3b7" stroke-width="1.4"><path d="M176 44q-8 72 15 127l-9 58M178 82l-19 25M180 125l32 24M187 165l-21 15M290 39q-22 70-9 119l-17 38M279 92l29 24M279 133l-25 20"/></g></g>
+<rect x="136" y="50" width="208" height="398" rx="5" fill="none" stroke="#7f7b63"/>
+<path d="M103 50V448M98 50H111M98 150H111M98 250H111M98 350H111M98 448H111" fill="none" stroke="#8b8d79"/>
+<g fill="#536152" font-family="system-ui,sans-serif" font-size="13"><path d="M345 102h30M345 213h30M345 339h30" stroke="#8b8d79"/><text x="382" y="107">Field</text><text x="382" y="218">Lab</text><text x="382" y="344">GIS</text></g></svg>

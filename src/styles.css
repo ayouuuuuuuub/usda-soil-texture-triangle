@@ -67,6 +67,39 @@ button.secondary:hover {
   letter-spacing: 0;
 }
 
+.consultant-callout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+.consultant-callout p {
+  margin: 0;
+  color: #536152;
+  font-size: 0.8rem;
+}
+
+.consultant-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #214b3f;
+  border-radius: 6px;
+  background: #214b3f;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.consultant-link:hover { background: #173f35; }
+.consultant-link:focus-visible { outline: 3px solid #9a7125; outline-offset: 4px; }
+
 .intro p {
   max-width: 720px;
   color: #536152;

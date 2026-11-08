@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520">
+<defs><clipPath id="top"><path d="M66 180 278 84 469 178 258 282Z"/></clipPath>
+<pattern id="dots" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="#817456"/></pattern></defs>
+<g stroke="#c8c3b3" stroke-width="1"><path d="M42 404 285 293 489 395M42 426 285 315 489 417M66 150V426M468 150V426" fill="none" stroke-dasharray="3 6"/></g>
+<path d="M66 330 258 428 469 324 469 350 258 454 66 356Z" fill="#b5ae98"/>
+<path d="M66 303 278 207 469 301 258 405Z" fill="#d5cbb0" stroke="#a3977a"/>
+<path d="M66 303 258 405 469 301 469 326 258 431 66 330Z" fill="#b7a47c"/>
+<path d="M66 269 278 173 469 267 258 371Z" fill="#e2d4ac" stroke="#a3977a"/>
+<path d="M66 269 258 371 469 267 469 292 258 396 66 294Z" fill="#c9b67a"/>
+<path d="M66 269 258 371 469 267 469 292 258 396 66 294Z" fill="url(#dots)"/>
+<path d="M66 228 278 132 469 226 258 330Z" fill="#bbbea4" stroke="#8b9577"/>
+<path d="M66 228 258 330 469 226 469 247 258 352 66 249Z" fill="#81957d"/>
+<path d="M66 180 278 84 469 178 258 282Z" fill="#e1e7d8" stroke="#607b63"/>
+<path d="M66 180 258 282 469 178 469 193 258 298 66 195Z" fill="#6e8970"/>
+<g clip-path="url(#top)" fill="none" stroke="#70896d" stroke-width="1.1"><ellipse cx="270" cy="206" rx="35" ry="16.45" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="57" ry="26.79" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="79" ry="37.129999999999995" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="101" ry="47.47" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="123" ry="57.809999999999995" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="145" ry="68.14999999999999" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="167" ry="78.49" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="189" ry="88.83" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="211" ry="99.16999999999999" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="233" ry="109.50999999999999" transform="rotate(-18 270 206)"/><ellipse cx="270" cy="206" rx="255" ry="119.85" transform="rotate(-18 270 206)"/></g>
+<path d="M163 200 211 152 328 201 296 247Z" fill="none" stroke="#214b3f" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M211 152V332M328 201V381" stroke="#214b3f" stroke-dasharray="2 5" opacity=".6"/>
+<circle cx="211" cy="152" r="4" fill="#214b3f"/><circle cx="328" cy="201" r="4" fill="#214b3f"/>
+<g fill="#536152" font-family="system-ui,sans-serif" font-size="11"><text x="60" y="66">Observe the soil</text><text x="323" y="476">Understand the landscape</text></g></svg>
