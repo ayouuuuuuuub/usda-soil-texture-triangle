@@ -27,7 +27,7 @@ button {
   background: #214b3f;
   color: #ffffff;
   cursor: pointer;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   font-weight: 700;
 }
@@ -67,12 +67,121 @@ button.secondary:hover {
   letter-spacing: 0;
 }
 
+::selection {
+  background: #c9b67a;
+  color: #1f271f;
+}
+
+:focus-visible {
+  outline: 3px solid #9a7125;
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Shared site header: mirrors the portfolio's Soil Logic nav. */
+.site-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px 28px;
+  padding-bottom: 18px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #d8d0bf;
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 44px;
+  color: #1f271f;
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  text-decoration: none;
+}
+
+.site-brand-mark {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  width: 23px;
+  height: 25px;
+  transform: skewY(-12deg);
+}
+
+.site-brand-mark i {
+  display: block;
+  height: 4px;
+  background: #214b3f;
+}
+
+.site-brand-mark i:nth-child(2) {
+  background: #7a886a;
+}
+
+.site-brand-mark i:nth-child(3) {
+  background: #c9b67a;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  font-size: 0.87rem;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #1f271f;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover {
+  color: #214b3f;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.site-nav a[aria-current="page"] {
+  font-weight: 700;
+  border-bottom-color: #214b3f;
+}
+
+.site-nav a[aria-current="page"]:hover {
+  text-decoration: none;
+}
+
 .consultant-callout {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 6px;
-  margin-bottom: 18px;
   text-align: right;
 }
 
@@ -98,7 +207,6 @@ button.secondary:hover {
 }
 
 .consultant-link:hover { background: #173f35; }
-.consultant-link:focus-visible { outline: 3px solid #9a7125; outline-offset: 4px; }
 
 .intro p {
   max-width: 720px;
@@ -111,7 +219,7 @@ button.secondary:hover {
   letter-spacing: 0.12em;
   color: #6b5d35;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 500;
   margin: 0 0 10px;
 }
 
@@ -145,7 +253,7 @@ button.secondary:hover {
 
 .seo-copy p:first-child {
   color: #263126;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .how-to h2 {
@@ -163,7 +271,7 @@ button.secondary:hover {
 
 .how-to li::marker {
   color: #214b3f;
-  font-weight: 900;
+  font-weight: 500;
 }
 
 .summary-panel {
@@ -179,41 +287,42 @@ button.secondary:hover {
 }
 
 .language-switch {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  color: #536152;
-  font-size: 0.78rem;
-  font-weight: 900;
-}
-
-.language-toggle {
-  position: relative;
-  width: 76px;
-  min-height: 36px;
-  padding: 0 12px;
+  display: inline-flex;
+  justify-self: end;
+  padding: 3px;
+  gap: 3px;
   border: 1px solid #cfc7b8;
+  border-radius: 8px;
   background: #fffdf9;
-  color: #263126;
 }
 
-.language-toggle:hover {
+.language-option {
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 5px;
+  background: transparent;
+  color: #536152;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.language-option:hover {
   background: #f3eee5;
-  color: #263126;
+  color: #1f271f;
 }
 
-.language-toggle.active {
+.language-option[aria-pressed="true"] {
   background: #214b3f;
   color: #ffffff;
-  border-color: #214b3f;
 }
 
 .summary-panel span {
   display: block;
   font-size: 3rem;
   line-height: 1;
-  font-weight: 850;
+  font-weight: 500;
   color: #214b3f;
 }
 
@@ -230,6 +339,10 @@ button.secondary:hover {
 .workspace {
   display: grid;
   grid-template-columns: minmax(390px, 0.92fr) minmax(520px, 1.08fr);
+}
+
+.workspace > * {
+  min-width: 0;
   gap: 22px;
   align-items: start;
 }
@@ -283,12 +396,19 @@ button.secondary:hover {
 .import-message {
   margin: -4px 0 14px;
   color: #214b3f;
-  font-weight: 800;
+  font-weight: 500;
+}
+
+.import-message:empty {
+  margin: 0;
 }
 
 .sample-grid {
   display: grid;
   gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .sample-row {
@@ -312,13 +432,13 @@ label span,
   display: block;
   color: #637061;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 500;
   margin-bottom: 5px;
 }
 
 input {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   border: 1px solid #cfc7b8;
   border-radius: 6px;
   background: #fffdf9;
@@ -326,26 +446,34 @@ input {
   padding: 0 10px;
 }
 
-input:focus {
-  outline: 3px solid #b7d4c8;
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #9a7125;
+  outline-offset: 1px;
   border-color: #214b3f;
 }
 
+input[aria-invalid="true"] {
+  border-color: #b66445;
+}
+
 .row-total {
-  min-height: 42px;
+  min-height: 44px;
 }
 
 .row-total strong {
   display: block;
   font-size: 1rem;
-  line-height: 42px;
+  line-height: 44px;
 }
 
 .icon-button {
-  width: 42px;
-  min-width: 42px;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
-  font-size: 1.5rem;
   background: #efe6d8;
   color: #583c2e;
 }
@@ -402,7 +530,7 @@ input:focus {
   margin-bottom: 5px;
   color: #637061;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .point-size-control {
@@ -426,15 +554,17 @@ input:focus {
   --slider-progress: 30%;
   appearance: none;
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
 }
 
-.point-size-control input:focus {
-  outline: none;
+.point-size-control input:focus-visible {
+  outline: 3px solid #9a7125;
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 .point-size-control input::-webkit-slider-runnable-track {
@@ -460,9 +590,6 @@ input:focus {
   box-shadow: 0 2px 8px rgba(31, 39, 31, 0.22);
 }
 
-.point-size-control input:focus::-webkit-slider-thumb {
-  outline: 3px solid #b7d4c8;
-}
 
 .point-size-control input::-moz-range-track {
   height: 8px;
@@ -487,14 +614,14 @@ input:focus {
 
 .style-picker select {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   border: 1px solid #cfc7b8;
   border-radius: 6px;
   background: #fffdf9;
   color: #1f271f;
   padding: 0 34px 0 10px;
   font: inherit;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .toggle-button {
@@ -571,7 +698,7 @@ input:focus {
 .class-label {
   fill: #1f271f;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
   paint-order: stroke;
   stroke: rgba(255, 255, 255, 0.72);
   stroke-width: 4px;
@@ -586,13 +713,13 @@ input:focus {
 .axis-label {
   fill: #263126;
   font-size: 16px;
-  font-weight: 850;
+  font-weight: 500;
 }
 
 .sample-label {
   fill: #173f35;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 500;
   paint-order: stroke;
   stroke: #ffffff;
   stroke-width: 4px;
@@ -601,7 +728,7 @@ input:focus {
 .legend-label {
   fill: #263126;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .results {
@@ -651,6 +778,15 @@ input:focus {
   color: #214b3f;
   font-weight: 900;
   text-decoration: none;
+  text-underline-offset: 4px;
+}
+
+.article-card a,
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-height: 44px;
 }
 
 .article-card a:hover,
@@ -2020,13 +2156,12 @@ td {
 th {
   background: #ece5d9;
   color: #263126;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 td:last-child {
-  font-weight: 800;
+  font-weight: 500;
   text-transform: capitalize;
 }
 
@@ -2067,6 +2202,32 @@ td:last-child {
     padding-top: 18px;
   }
 
+  .site-header {
+    grid-template-columns: 1fr auto;
+    gap: 6px 16px;
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+  }
+
+  .site-brand {
+    font-size: 1.07rem;
+  }
+
+  .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: 0 22px;
+  }
+
+  .consultant-link {
+    padding: 10px 14px;
+    font-size: 0.84rem;
+  }
+
+  .consultant-callout p {
+    display: none;
+  }
+
   .sample-editor,
   .triangle-panel,
   .results {
@@ -2083,15 +2244,17 @@ td:last-child {
 
   .actions button,
   .triangle-toolbar button {
-    flex: 1;
+    flex: 1 1 auto;
   }
 
   .triangle-toolbar {
+    flex-direction: column;
     align-items: stretch;
   }
 
   .toolbar-group {
     width: 100%;
+    flex-basis: auto;
   }
 
   .style-picker,
@@ -2135,5 +2298,612 @@ td:last-child {
 
   .icon-button {
     justify-self: end;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Homepage: the Soil Logic consulting look, shared with the portfolio (Red Hat Display and Text,
+   the client's paper, ink and forest green, a 72px bar with a hairline, flat sections parted by
+   space and hairlines). Scoped to .home so the article pages keep their own styles.
+   --------------------------------------------------------------------------------------------- */
+.home {
+  --ink: #1f271f;
+  --muted: #536152;
+  --line: rgba(31, 39, 31, 0.13);
+  font-family: "Red Hat Text", system-ui, sans-serif;
+  color: var(--ink);
+  padding-top: 0;
+}
+
+.home h1,
+.home h2,
+.home h3,
+.home .summary-panel span,
+.home .site-brand {
+  font-family: "Red Hat Display", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.home .intro h1 {
+  font-size: clamp(2.25rem, 4.4vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.home .intro p {
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.home .eyebrow,
+.home .article-kicker {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.home .section-heading h2,
+.home .how-to h2 {
+  font-size: 1.625rem;
+  line-height: 1.2;
+}
+
+.home .article-card h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.home button {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.home button.secondary {
+  background: #e9e5d8;
+}
+
+.home button.secondary:hover {
+  background: #ddd8c8;
+}
+
+/* the bar: the words left, the name on the centre line, the action right, as on the portfolio */
+.home .site-header {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-height: 72px;
+  padding: 14px 0;
+  margin-bottom: 56px;
+  border-bottom-color: var(--line);
+}
+
+.home .site-nav {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.home .site-brand {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 1.625rem;
+}
+
+.home .consultant-callout {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+
+.home .consultant-link {
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* flat sections: the reading blocks sit on the page ground, parted by a hairline */
+.home .seo-overview {
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+  margin-bottom: 48px;
+}
+
+.home .seo-copy,
+.home .how-to {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.home .seo-copy p:first-child {
+  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.home .summary-panel {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  padding: 4px 0 4px 24px;
+}
+
+.home .sample-editor,
+.home .triangle-panel,
+.home .results {
+  border-color: var(--line);
+  border-radius: 12px;
+}
+
+.home .sample-row {
+  border-color: var(--line);
+  border-radius: 10px;
+}
+
+.home .triangle-toolbar {
+  border-color: var(--line);
+  background: transparent;
+}
+
+.home .article-teaser-section {
+  margin-top: 56px;
+  padding: 32px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.home .article-card {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 16px 0 0;
+}
+
+.home .article-card a,
+.home .text-link {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+  .home .site-header {
+    grid-template-columns: 1fr auto;
+    margin-bottom: 32px;
+  }
+
+  .home .site-brand {
+    grid-column: 1;
+    font-size: 1.25rem;
+  }
+
+  .home .consultant-callout {
+    grid-column: 2;
+  }
+
+  .home .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .home .summary-panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 16px 0 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Homepage cleanup. Looks and layout only: no control, handler or output of the calculator changes.
+   - the same content edges as the portfolio (a 1280px column with its gutter);
+   - a shorter intro, so the tool starts higher on the page;
+   - samples and results in one column, the plot beside them, no card stretched to an empty half;
+   - the language switch in the bar with the consultant link, and a footer;
+   - one radius scale, buttons that answer the pointer, article cards that are links as a whole.
+   --------------------------------------------------------------------------------------------- */
+.home {
+  --gut: clamp(20px, 5.5vw, 80px);
+  --forest: #214b3f;
+  width: min(1280px, 100% - 2 * var(--gut));
+  padding-bottom: 0;
+}
+
+/* the bar */
+.home .site-header {
+  margin-bottom: clamp(32px, 3.6vw, 48px);
+}
+.home .site-actions {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.home .consultant-callout {
+  display: block;
+}
+.home .consultant-link {
+  white-space: nowrap;
+}
+/* the specialties line still describes the link for screen readers; it no longer hangs under the button */
+.home .consultant-callout p {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.home .language-switch {
+  background: transparent;
+  border-color: var(--line);
+  border-radius: 10px;
+}
+.home .language-option {
+  min-width: 44px;
+  min-height: 38px;
+  border-radius: 7px;
+}
+
+/* the intro: one line of promise, the live count beside it */
+.home .intro {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px 48px;
+  align-items: end;
+  margin-bottom: clamp(28px, 3vw, 40px);
+}
+.home .intro h1 {
+  max-width: 18ch;
+  font-size: clamp(2.125rem, 3.7vw, 3.5rem);
+  line-height: 1.04;
+}
+.home .intro p {
+  max-width: 58ch;
+  margin-top: 14px;
+}
+.home .intro .eyebrow {
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+}
+.home .summary-panel {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 14px;
+  align-items: center;
+  padding: 2px 0 2px 24px;
+}
+.home .summary-panel span {
+  grid-row: 1 / span 2;
+  font-size: 3.25rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.home .summary-panel p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  align-self: end;
+}
+.home .summary-panel strong {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+  align-self: start;
+}
+
+/* the workspace: samples, then results, with the plot beside them */
+.home .workspace {
+  gap: 24px;
+}
+.home .workspace > .results {
+  margin-top: 0;
+}
+.home .sample-editor {
+  container: samples / inline-size;
+}
+.home .results {
+  container: results / inline-size;
+}
+.home .section-heading {
+  align-items: flex-start;
+}
+.home .section-heading p {
+  max-width: 44ch;
+}
+.home .section-heading button {
+  flex: none;
+  white-space: nowrap;
+}
+/* the samples' actions on their own line: the two file actions left, the main action right */
+.home .sample-editor .section-heading {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+.home .sample-editor .actions {
+  justify-content: flex-start;
+}
+.home .sample-editor .actions button:not(.secondary) {
+  margin-left: auto;
+}
+@media (min-width: 1101px) {
+  .home .workspace {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "samples plot" "results plot";
+    align-items: start;
+  }
+  .home .sample-editor { grid-area: samples; }
+  .home .triangle-panel { grid-area: plot; }
+  .home .workspace > .results { grid-area: results; }
+}
+
+/* a sample row, wide: one line. Narrow (a phone, or the column beside the plot): the name with its
+   delete button, then the three fractions and their total on one line */
+.home .sample-row {
+  grid-template-columns: minmax(110px, 1.4fr) repeat(3, minmax(70px, 0.8fr)) 60px 44px;
+  gap: 10px;
+}
+.home .sample-row label:first-child {
+  grid-column: auto;
+}
+.home .sample-row .icon-button {
+  justify-self: end;
+}
+@container samples (max-width: 500px) {
+  .home .sample-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(56px, auto);
+    gap: 10px 8px;
+  }
+  .home .sample-row label:first-child {
+    grid-column: 1 / 4;
+    grid-row: 1;
+  }
+  .home .sample-row .icon-button {
+    grid-column: 4;
+    grid-row: 1;
+  }
+  .home .sample-row .validation {
+    grid-column: 1 / -1;
+  }
+}
+
+/* the plot's controls: what you set on the first line, what you do on the second */
+.home .triangle-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  padding: 14px;
+}
+.home .controls-group {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+.home .point-size-control,
+.home .style-picker {
+  min-width: 0;
+}
+.home .action-group {
+  justify-content: flex-start;
+}
+.home .action-group .toggle-button {
+  margin-right: auto;
+}
+@media (max-width: 560px) {
+  .home .sample-editor .actions button {
+    flex: 1 1 auto;
+  }
+  .home .sample-editor .actions button:not(.secondary) {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+  .home .controls-group {
+    grid-template-columns: 1fr;
+  }
+  .home .action-group .toggle-button {
+    flex: 1 1 100%;
+  }
+}
+
+/* the results table fits its column; on a phone it scrolls inside its own frame */
+.home table {
+  min-width: 0;
+  font-size: 0.9375rem;
+}
+.home th,
+.home td {
+  padding: 12px 10px;
+  border-bottom-color: var(--line);
+}
+.home th:first-child,
+.home td:first-child {
+  padding-left: 14px;
+}
+.home td:not(:first-child):not(:last-child) {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.home tbody tr:last-child td {
+  border-bottom: 0;
+}
+@container results (max-width: 470px) {
+  .home table {
+    min-width: 540px;
+  }
+}
+
+/* one radius scale: fields and buttons 8, rows 10, panels 12 */
+.home input,
+.home select,
+.home .consultant-link {
+  border-radius: 8px;
+}
+.home .point-size-control input {
+  border-radius: 0;
+}
+.home .triangle-toolbar,
+.home .triangle-figure svg {
+  border-radius: 10px;
+}
+
+/* controls answer the pointer and the press */
+.home button,
+.home .consultant-link {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 120ms ease;
+}
+.home button:active,
+.home .consultant-link:active {
+  transform: scale(0.97);
+}
+
+/* the guides: each card is one link, its action always on the bottom line */
+.home .article-teaser-section {
+  margin-top: clamp(56px, 6vw, 88px);
+  padding-top: 40px;
+}
+.home .article-teaser-section .section-heading {
+  align-items: end;
+  margin-bottom: 28px;
+}
+.home .article-card-grid {
+  gap: 32px 28px;
+}
+.home .article-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 0 0;
+  transition: border-color 200ms ease;
+}
+.home .article-card h3 {
+  transition: color 160ms ease;
+}
+.home .article-card a {
+  margin-top: auto;
+  align-self: flex-start;
+}
+.home .article-card a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .home .article-card:hover {
+    border-top-color: var(--forest);
+  }
+  .home .article-card:hover h3 {
+    color: var(--forest);
+  }
+}
+.home .article-card:focus-within {
+  border-top-color: var(--forest);
+}
+
+/* the footer */
+.home .site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 32px;
+  margin-top: clamp(64px, 7vw, 104px);
+  padding: 20px 0 28px;
+  border-top: 1px solid var(--line);
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+.home .site-footer .site-brand {
+  font-size: 1.25rem;
+}
+.home .site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 28px;
+}
+.home .site-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.home .site-footer nav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* between a phone and a wide screen the name goes left, so the bar's three parts never collide */
+@media (min-width: 761px) and (max-width: 980px) {
+  .home .site-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .home .site-brand {
+    grid-column: 1;
+  }
+  .home .site-nav {
+    grid-column: 2;
+  }
+}
+@media (max-width: 760px) {
+  /* brand and consultant link on the first line, the pages and the language on the second */
+  .home .site-actions {
+    display: contents;
+  }
+  .home .consultant-callout {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .home .language-switch {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
+  }
+  .home .language-option {
+    min-height: 44px;
+  }
+  .home .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    gap: 0 22px;
+  }
+  .home .intro {
+    grid-template-columns: 1fr;
+  }
+  .home .summary-panel {
+    justify-content: start;
+    padding: 14px 0 0;
+  }
+  .home .summary-panel span {
+    font-size: 2.5rem;
+  }
+  .home .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home *,
+  .home *::before,
+  .home *::after {
+    transition: none !important;
   }
 }

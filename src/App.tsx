@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, Route, Routes, useParams } from "react-router-dom";
 import { articles, findArticleBySlug } from "./data/articles";
 import Portfolio from "./portfolio/Portfolio";
@@ -154,6 +154,105 @@ const TRIANGLE_STYLES = [
     text: "#111111",
     tick: "#555555",
     colors: ["#ece2c6", "#e4d6ad", "#d7deb8", "#bfd5ba", "#b8d6d4", "#d8e7ef", "#d2b192", "#c4ad9b", "#bdc8a9", "#bd958c", "#a5b09a", "#b0aaa4"],
+  },
+  {
+    id: "outline",
+    name: "Line drawing",
+    background: "#ffffff",
+    border: "#000000",
+    boundary: "#000000",
+    grid: "#6b7280",
+    text: "#000000",
+    tick: "#333333",
+    colors: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+  },
+  {
+    id: "grayscale",
+    name: "Greyscale print",
+    background: "#ffffff",
+    border: "#111111",
+    boundary: "#222222",
+    grid: "#555555",
+    text: "#000000",
+    tick: "#444444",
+    colors: ["#f4f4f4", "#e4e4e4", "#d2d2d2", "#c0c0c0", "#dcdcdc", "#eeeeee", "#b4b4b4", "#a4a4a4", "#bababa", "#969696", "#a0a0a0", "#868686"],
+  },
+  {
+    id: "colorblind",
+    name: "Colour-blind safe",
+    background: "#ffffff",
+    border: "#111111",
+    boundary: "#222222",
+    grid: "#4b5563",
+    text: "#000000",
+    tick: "#333333",
+    colors: ["#f0e442", "#f7ef9a", "#f5c56b", "#7fd1b9", "#a6d8f3", "#56b4e9", "#e69f00", "#4dbb9a", "#6fa8d6", "#e08a4f", "#2f8ac4", "#d55e00"],
+  },
+  {
+    id: "munsell",
+    name: "Soil colours",
+    background: "#faf6ee",
+    border: "#33261a",
+    boundary: "#4a3828",
+    grid: "#5c4a38",
+    text: "#2b2118",
+    tick: "#5c4a38",
+    colors: ["#e3cfa0", "#d2b684", "#b89a66", "#8f7655", "#a89f7c", "#c2bda3", "#b07a42", "#8a6242", "#8f7a5c", "#b56f47", "#86604f", "#9c4a32"],
+  },
+  {
+    id: "blend",
+    name: "Sand, silt, clay blend",
+    background: "#fdfcf8",
+    border: "#2a2a2a",
+    boundary: "#3d3d3d",
+    grid: "#555555",
+    text: "#1c1c1c",
+    tick: "#4f4f4f",
+    colors: ["#ebc061", "#debb69", "#c8b379", "#aba58b", "#86a1ab", "#69a3c8", "#d0a567", "#ad9880", "#89919d", "#d2985c", "#8f868f", "#b2816b"],
+  },
+  {
+    id: "terracotta",
+    name: "Red earth",
+    background: "#fdf6ee",
+    border: "#5a2a17",
+    boundary: "#8a4a2f",
+    grid: "#8a5a40",
+    text: "#4a2414",
+    tick: "#7a5140",
+    colors: ["#f6dfae", "#f1cf93", "#eabf83", "#dfae7c", "#e9c9a8", "#f3ddc6", "#d99a66", "#cc8560", "#d7a58a", "#c2704a", "#b9735c", "#a8553d"],
+  },
+  {
+    id: "brand",
+    name: "Soil Logic",
+    background: "#f4f1e8",
+    border: "#1f271f",
+    boundary: "#214b3f",
+    grid: "#536152",
+    text: "#1f271f",
+    tick: "#536152",
+    colors: ["#e9dfbd", "#dccb93", "#c9b67a", "#b7c0a0", "#cfd6c2", "#e3e7da", "#a9b08a", "#8f9c7c", "#a4b3a1", "#7a886a", "#6f8a7c", "#4f7566"],
+  },
+  {
+    id: "blueprint",
+    name: "Blueprint",
+    background: "#12355b",
+    border: "#e8f1fb",
+    boundary: "#cfe3f7",
+    grid: "#9cc3ea",
+    text: "#f2f8ff",
+    tick: "#b9d4ee",
+    colors: ["#ffffff", "#9fd0ff", "#ffffff", "#6fb4f2", "#ffffff", "#9fd0ff", "#6fb4f2", "#ffffff", "#9fd0ff", "#ffffff", "#6fb4f2", "#9fd0ff"],
+  },
+  {
+    id: "night",
+    name: "Night field",
+    background: "#17302a",
+    border: "#f4f1e8",
+    boundary: "#c9b67a",
+    grid: "#b9c2ad",
+    text: "#f4f1e8",
+    tick: "#b9c2ad",
+    colors: ["#d8b365", "#e5c68b", "#c7d59f", "#9fc7a7", "#9cc9c8", "#b6d4e7", "#caa47f", "#b59b84", "#a9b79a", "#ad7f6f", "#879a82", "#8f8178"],
   },
 ] as const;
 
@@ -337,6 +436,157 @@ const STYLE_VISUALS: Record<TriangleStyle["id"], StyleVisuals> = {
     axisSize: 14,
     pointStrokeWidth: 2,
   },
+  outline: {
+    fillOpacity: 0,
+    gridOpacity: 0.3,
+    gridWidth: 0.6,
+    gridEvery: 1,
+    boundaryOpacity: 1,
+    boundaryWidth: 1.6,
+    borderWidth: 2.2,
+    labelSize: 12,
+    labelWeight: 700,
+    labelTransform: "none",
+    labelStrokeWidth: 5,
+    tickSize: 11,
+    axisSize: 15,
+    pointStrokeWidth: 2,
+  },
+  grayscale: {
+    fillOpacity: 1,
+    gridOpacity: 0.16,
+    gridWidth: 0.7,
+    gridEvery: 1,
+    boundaryOpacity: 1,
+    boundaryWidth: 1.3,
+    borderWidth: 2.2,
+    labelSize: 12,
+    labelWeight: 750,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 11,
+    axisSize: 15,
+    pointStrokeWidth: 2.5,
+  },
+  colorblind: {
+    fillOpacity: 0.85,
+    gridOpacity: 0.14,
+    gridWidth: 0.8,
+    gridEvery: 1,
+    boundaryOpacity: 1,
+    boundaryWidth: 1.6,
+    borderWidth: 2.4,
+    labelSize: 13,
+    labelWeight: 800,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 3,
+  },
+  munsell: {
+    fillOpacity: 0.86,
+    gridOpacity: 0.16,
+    gridWidth: 0.9,
+    gridEvery: 1,
+    boundaryOpacity: 0.85,
+    boundaryWidth: 1.4,
+    borderWidth: 2.3,
+    labelSize: 13,
+    labelWeight: 800,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 2.8,
+  },
+  blend: {
+    fillOpacity: 0.9,
+    gridOpacity: 0.14,
+    gridWidth: 0.8,
+    gridEvery: 1,
+    boundaryOpacity: 0.8,
+    boundaryWidth: 1.3,
+    borderWidth: 2.2,
+    labelSize: 13,
+    labelWeight: 800,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 2.8,
+  },
+  terracotta: {
+    fillOpacity: 0.88,
+    gridOpacity: 0.16,
+    gridWidth: 0.9,
+    gridEvery: 1,
+    boundaryOpacity: 0.75,
+    boundaryWidth: 1.4,
+    borderWidth: 2.3,
+    labelSize: 13,
+    labelWeight: 800,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 2.6,
+  },
+  brand: {
+    fillOpacity: 0.9,
+    gridOpacity: 0.14,
+    gridWidth: 0.9,
+    gridEvery: 1,
+    boundaryOpacity: 0.8,
+    boundaryWidth: 1.4,
+    borderWidth: 2.3,
+    labelSize: 13,
+    labelWeight: 800,
+    labelTransform: "none",
+    labelStrokeWidth: 4.5,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 2.6,
+  },
+  blueprint: {
+    fillOpacity: 0.16,
+    gridOpacity: 0.28,
+    gridWidth: 0.7,
+    gridEvery: 1,
+    boundaryOpacity: 0.95,
+    boundaryWidth: 1.4,
+    borderWidth: 2.2,
+    labelSize: 12,
+    labelWeight: 700,
+    labelTransform: "uppercase",
+    labelStrokeWidth: 4,
+    tickSize: 11,
+    axisSize: 15,
+    pointStrokeWidth: 2.5,
+  },
+  night: {
+    fillOpacity: 0.4,
+    gridOpacity: 0.2,
+    gridWidth: 0.8,
+    gridEvery: 1,
+    boundaryOpacity: 0.85,
+    boundaryWidth: 1.3,
+    borderWidth: 2.2,
+    labelSize: 13,
+    labelWeight: 750,
+    labelTransform: "none",
+    labelStrokeWidth: 4,
+    tickSize: 12,
+    axisSize: 16,
+    pointStrokeWidth: 2.5,
+  },
+};
+
+// Dark styles only: the colours of what is otherwise drawn for a light ground (the halo behind the
+// class names, the sample names, the legend). Styles without an entry keep the stylesheet's colours.
+const STYLE_INKS: Partial<Record<TriangleStyle["id"], { halo: string; sampleText: string; legendText: string }>> = {
+  blueprint: { halo: "rgba(18, 53, 91, 0.88)", sampleText: "#ffffff", legendText: "#f2f8ff" },
+  night: { halo: "rgba(23, 48, 42, 0.88)", sampleText: "#ffffff", legendText: "#f4f1e8" },
 };
 
 const STYLE_NAMES: Record<TriangleStyle["id"], Record<Locale, string>> = {
@@ -344,12 +594,21 @@ const STYLE_NAMES: Record<TriangleStyle["id"], Record<Locale, string>> = {
   minimal: { en: "Minimal ink", fr: "Minimaliste" },
   agronomy: { en: "Agronomy", fr: "Agronomie" },
   scientific: { en: "Scientific", fr: "Scientifique" },
-  contrast: { en: "High contrast", fr: "Contraste eleve" },
+  contrast: { en: "High contrast", fr: "Contraste élevé" },
   atlas: { en: "Atlas", fr: "Atlas" },
   coastal: { en: "Coastal", fr: "Littoral" },
   pastel: { en: "Soft pastel", fr: "Pastel doux" },
   slate: { en: "Slate lab", fr: "Laboratoire" },
   publication: { en: "Publication", fr: "Publication" },
+  outline: { en: "Line drawing", fr: "Dessin au trait" },
+  grayscale: { en: "Greyscale print", fr: "Niveaux de gris" },
+  colorblind: { en: "Colour-blind safe", fr: "Adapté aux daltoniens" },
+  munsell: { en: "Soil colours", fr: "Couleurs de sol" },
+  blend: { en: "Sand, silt, clay blend", fr: "Mélange sable, limon, argile" },
+  terracotta: { en: "Red earth", fr: "Terre rouge" },
+  brand: { en: "Soil Logic", fr: "Soil Logic" },
+  blueprint: { en: "Blueprint", fr: "Plan bleu" },
+  night: { en: "Night field", fr: "Terrain de nuit" },
 };
 
 const TEXTURE_LABELS: Record<TextureClass, Record<Locale, string>> = {
@@ -357,8 +616,8 @@ const TEXTURE_LABELS: Record<TextureClass, Record<Locale, string>> = {
   "loamy sand": { en: "loamy sand", fr: "sable limoneux" },
   "sandy loam": { en: "sandy loam", fr: "limon sableux" },
   loam: { en: "loam", fr: "limon" },
-  "silt loam": { en: "silt loam", fr: "Limon fin" },
-  silt: { en: "silt", fr: "Limon tres fin" },
+  "silt loam": { en: "silt loam", fr: "limon fin" },
+  silt: { en: "silt", fr: "limon très fin" },
   "sandy clay loam": { en: "sandy clay loam", fr: "limon argilo-sableux" },
   "clay loam": { en: "clay loam", fr: "limon argileux" },
   "silty clay loam": { en: "silty clay loam", fr: "limon argilo-limoneux" },
@@ -437,76 +696,90 @@ const UI_TEXT = {
     validationNumeric: "Enter numeric percentages for sand, silt, and clay.",
     validationRange: "Each fraction must be between 0 and 100%.",
     validationTotal: "Sand + silt + clay must equal 100%. Current total:",
+    readArticleAbout: "about",
+    mainNav: "Main navigation",
+    footerNav: "Footer",
+    calculator: "Calculator",
+    soilGuides: "Soil guides",
+    consultant: "Need a consultant?",
+    consultantSpecialties: "Soil science, agronomy & environment",
   },
   fr: {
     eyebrow: "Triangle textural USDA des sols",
-    title: "Classer et comparer des echantillons de sol",
+    title: "Classer et comparer des échantillons de sol",
     subtitle:
-      "Saisissez les pourcentages de sable, limon et argile pour un ou plusieurs echantillons. Les lignes valides sont classees et tracees ensemble sur le triangle USDA.",
+      "Saisissez les pourcentages de sable, limon et argile pour un ou plusieurs échantillons. Les lignes valides sont classées et tracées ensemble sur le triangle USDA.",
     seoLead:
-      "Le triangle textural USDA est un diagramme de reference pour identifier les classes texturales d'un sol a partir des proportions de sable, limon et argile.",
+      "Le triangle textural USDA est un diagramme de référence pour identifier les classes texturales d'un sol à partir des proportions de sable, limon et argile.",
     seoBody:
-      "Utilisez ce calculateur gratuit pour classer et comparer des echantillons en agronomie, pedologie, etudes d'irrigation, laboratoires de sols et conseil environnemental.",
+      "Utilisez ce calculateur gratuit pour classer et comparer des échantillons en agronomie, pédologie, études d'irrigation, laboratoires de sols et conseil environnemental.",
     howToTitle: "Mode d'emploi",
     howToSteps: [
       "Saisissez les pourcentages de sable, limon et argile.",
-      "Verifiez que le total est egal a 100 %.",
-      "Ajoutez un ou plusieurs echantillons.",
+      "Vérifiez que le total est égal à 100 %.",
+      "Ajoutez un ou plusieurs échantillons.",
       "Comparez-les sur le triangle USDA.",
-      "Exportez le resultat si necessaire.",
+      "Exportez le résultat si nécessaire.",
     ],
     exploreTitle: "Explorer les classes texturales USDA",
     exploreIntro:
-      "Consultez de courts guides pour chaque classe texturale USDA et completez-les progressivement.",
+      "Consultez de courts guides pour chaque classe texturale USDA et complétez-les progressivement.",
     allArticles: "Tous les articles",
     readArticle: "Lire l'article",
     language: "Langue",
-    samplesEntered: "echantillons saisis",
-    validForPlotting: "valides pour le trace",
-    sampleSummary: "Resume des echantillons",
-    samples: "Echantillons",
-    sampleHelp: "Le total doit etre egal a 100 % avant qu'un point apparaisse sur le triangle.",
+    samplesEntered: "échantillons saisis",
+    validForPlotting: "valides pour le tracé",
+    sampleSummary: "Résumé des échantillons",
+    samples: "Échantillons",
+    sampleHelp: "Le total doit être égal à 100 % avant qu'un point apparaisse sur le triangle.",
     importCsv: "Importer CSV",
-    reset: "Reinitialiser",
+    reset: "Réinitialiser",
     addSample: "Ajouter",
-    label: "Libelle",
+    label: "Libellé",
     sand: "Sable",
     silt: "Limon",
     clay: "Argile",
     total: "Total",
     delete: "Supprimer",
     textureTriangle: "Triangle textural",
-    validPlotted: "Les echantillons valides sont traces et etiquetes.",
-    noValidSamples: "Aucun echantillon valide pour le moment.",
+    validPlotted: "Les échantillons valides sont tracés et étiquetés.",
+    noValidSamples: "Aucun échantillon valide pour le moment.",
     triangleStyle: "Style du triangle",
     pointSize: "Taille des points",
-    outsideLegend: "Legende externe",
+    outsideLegend: "Légende externe",
     exportPng: "Exporter PNG",
     exportSvg: "Exporter SVG",
     axisSand: "% sable",
     axisSilt: "% limon",
     axisClay: "% argile",
-    sampleLegend: "Legende des echantillons",
-    figcaption: "Les coordonnees du triangle placent l'argile au sommet, le sable en bas a gauche et le limon en bas a droite.",
-    results: "Resultats de classification",
-    resultsHelp: "Les classes texturales sont attribuees avec les memes limites USDA que le graphique.",
+    sampleLegend: "Légende des échantillons",
+    figcaption: "Les coordonnées du triangle placent l'argile au sommet, le sable en bas à gauche et le limon en bas à droite.",
+    results: "Résultats de classification",
+    resultsHelp: "Les classes texturales sont attribuées avec les mêmes limites USDA que le graphique.",
     exportTable: "Exporter le tableau CSV",
-    sample: "Echantillon",
+    sample: "Échantillon",
     textureClass: "Classe texturale USDA",
-    untitledSample: "Echantillon sans nom",
+    untitledSample: "Échantillon sans nom",
     valid: "valide",
     invalid: "invalide",
-    importedSample: "Echantillon importe",
-    csvNoRows: "Le CSV doit contenir une ligne d'en-tete et au moins une ligne d'echantillon.",
-    csvBadHeaders: 'Les en-tetes CSV doivent inclure "sample", "sand" et "clay".',
+    importedSample: "Échantillon importé",
+    csvNoRows: "Le CSV doit contenir une ligne d'en-tête et au moins une ligne d'échantillon.",
+    csvBadHeaders: 'Les en-têtes CSV doivent inclure "sample", "sand" et "clay".',
     row: "Ligne",
-    csvBadNumber: "contient une valeur sable ou argile non numerique.",
+    csvBadNumber: "contient une valeur sable ou argile non numérique.",
     csvUnable: "Impossible d'importer le CSV.",
-    imported: "Importe",
-    samplesFrom: "echantillons depuis",
-    validationNumeric: "Saisissez des pourcentages numeriques pour le sable, le limon et l'argile.",
-    validationRange: "Chaque fraction doit etre comprise entre 0 et 100 %.",
-    validationTotal: "Sable + limon + argile doit etre egal a 100 %. Total actuel :",
+    imported: "Importé :",
+    samplesFrom: "échantillons depuis",
+    validationNumeric: "Saisissez des pourcentages numériques pour le sable, le limon et l'argile.",
+    validationRange: "Chaque fraction doit être comprise entre 0 et 100 %.",
+    validationTotal: "Sable + limon + argile doit être égal à 100 %. Total actuel :",
+    readArticleAbout: "sur la classe",
+    mainNav: "Navigation principale",
+    footerNav: "Pied de page",
+    calculator: "Calculateur",
+    soilGuides: "Guides des sols",
+    consultant: "Besoin d'un consultant ?",
+    consultantSpecialties: "Science du sol, agronomie et environnement",
   },
 } as const;
 
@@ -690,12 +963,83 @@ function csvCell(value: string | number) {
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+const LOCALE_STORAGE_KEY = "soil-logic-locale";
+
+// English by default; French when the visitor's browser prefers French,
+// unless they already picked a language on this site.
+function initialLocale(): Locale {
+  try {
+    const saved = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (saved === "en" || saved === "fr") return saved;
+  } catch {
+    // Storage can be blocked; fall back to the browser preference.
+  }
+  if (typeof window === "undefined" || typeof navigator === "undefined") return "en";
+  const preferred = navigator.languages?.length ? navigator.languages[0] : navigator.language;
+  return preferred?.toLowerCase().startsWith("fr") ? "fr" : "en";
+}
+
+function SiteHeader({ locale, children }: { locale: Locale; children?: ReactNode }) {
+  const t = UI_TEXT[locale];
+  return (
+    <header className="site-header">
+      <Link className="site-brand" to="/">
+        <span className="site-brand-mark" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        Soil Logic
+      </Link>
+      <nav className="site-nav" aria-label={t.mainNav}>
+        <Link to="/" aria-current="page">
+          {t.calculator}
+        </Link>
+        <Link to="/articles">{t.soilGuides}</Link>
+      </nav>
+      <div className="site-actions">
+        {children}
+        <div className="consultant-callout">
+          <Link className="consultant-link" to="/portfolio" aria-describedby="consultant-specialties">
+            {t.consultant}
+          </Link>
+          <p id="consultant-specialties">{t.consultantSpecialties}</p>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function DeleteIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false">
+      <path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function HomePage() {
   useEffect(() => {
     document.title = "USDA Soil Texture Triangle Tool | Free Soil Texture Calculator";
   }, []);
 
-  const [locale, setLocale] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
+
+  function setLocale(next: Locale) {
+    setLocaleState(next);
+    try {
+      window.localStorage.setItem(LOCALE_STORAGE_KEY, next);
+    } catch {
+      // Ignore: the choice simply won't persist.
+    }
+  }
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    return () => {
+      document.documentElement.lang = "en";
+    };
+  }, [locale]);
   const [samples, setSamples] = useState<Sample[]>(INITIAL_SAMPLES);
   const [lastEditedFields, setLastEditedFields] = useState<Record<string, FractionField[]>>({});
   const [importMessage, setImportMessage] = useState("");
@@ -809,11 +1153,32 @@ function HomePage() {
   }
 
   return (
-    <main className="app-shell">
-      <div className="consultant-callout">
-        <Link className="consultant-link" to="/portfolio" aria-describedby="consultant-specialties">Need a consultant?</Link>
-        <p id="consultant-specialties">Soil science, agronomy &amp; environment</p>
-      </div>
+    <div className="app-shell home">
+      <SiteHeader locale={locale}>
+        <div className="language-switch" role="group" aria-label={t.language}>
+          <button
+            type="button"
+            lang="en"
+            className="language-option"
+            aria-pressed={locale === "en"}
+            onClick={() => setLocale("en")}
+          >
+            <span aria-hidden="true">EN</span>
+            <span className="sr-only">English</span>
+          </button>
+          <button
+            type="button"
+            lang="fr"
+            className="language-option"
+            aria-pressed={locale === "fr"}
+            onClick={() => setLocale("fr")}
+          >
+            <span aria-hidden="true">FR</span>
+            <span className="sr-only">Français</span>
+          </button>
+        </div>
+      </SiteHeader>
+      <main>
       <section className="intro">
         <div>
           <p className="eyebrow">{t.eyebrow}</p>
@@ -821,18 +1186,6 @@ function HomePage() {
           <p>{t.subtitle}</p>
         </div>
         <div className="summary-stack">
-          <div className="language-switch" aria-label={t.language}>
-            <span>ENG</span>
-            <button
-              type="button"
-              className={locale === "fr" ? "language-toggle active" : "language-toggle"}
-              aria-pressed={locale === "fr"}
-              onClick={() => setLocale((current) => (current === "en" ? "fr" : "en"))}
-            >
-              {locale.toUpperCase()}
-            </button>
-            <span>FR</span>
-          </div>
           <div className="summary-panel" aria-label={t.sampleSummary}>
             <span>{samples.length}</span>
             <p>{t.samplesEntered}</p>
@@ -887,13 +1240,25 @@ function HomePage() {
               </button>
             </div>
           </div>
-          {importMessage ? <p className="import-message">{importMessage}</p> : null}
+          <p className="import-message" role="status" aria-live="polite">
+            {importMessage}
+          </p>
 
-          <div className="sample-grid" role="list">
+          <ul className="sample-grid">
             {samples.map((sample) => {
               const message = validationMessageFor(sample, locale);
+              const validationId = `validation-${sample.id}`;
+              const fractionInputProps = {
+                type: "number",
+                inputMode: "decimal",
+                min: "0",
+                max: "100",
+                step: "0.1",
+                "aria-invalid": message ? true : undefined,
+                "aria-describedby": message ? validationId : undefined,
+              } as const;
               return (
-                <article className={message ? "sample-row invalid" : "sample-row"} key={sample.id}>
+                <li className={message ? "sample-row invalid" : "sample-row"} key={sample.id}>
                   <label>
                     <span>{t.label}</span>
                     <input
@@ -904,10 +1269,7 @@ function HomePage() {
                   <label>
                     <span>{t.sand} %</span>
                     <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
+                      {...fractionInputProps}
                       value={sample.sand}
                       onChange={(event) => updateSample(sample.id, "sand", event.target.value)}
                     />
@@ -915,10 +1277,7 @@ function HomePage() {
                   <label>
                     <span>{t.silt} %</span>
                     <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
+                      {...fractionInputProps}
                       value={sample.silt}
                       onChange={(event) => updateSample(sample.id, "silt", event.target.value)}
                     />
@@ -926,10 +1285,7 @@ function HomePage() {
                   <label>
                     <span>{t.clay} %</span>
                     <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="0.1"
+                      {...fractionInputProps}
                       value={sample.clay}
                       onChange={(event) => updateSample(sample.id, "clay", event.target.value)}
                     />
@@ -941,16 +1297,20 @@ function HomePage() {
                   <button
                     type="button"
                     className="icon-button"
-                    aria-label={`${t.delete} ${sample.label}`}
+                    aria-label={`${t.delete} ${sample.label || t.untitledSample}`}
                     onClick={() => deleteSample(sample.id)}
                   >
-                    X
+                    <DeleteIcon />
                   </button>
-                  {message ? <p className="validation">{message}</p> : null}
-                </article>
+                  {message ? (
+                    <p className="validation" id={validationId}>
+                      {message}
+                    </p>
+                  ) : null}
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
 
         <div className="triangle-panel">
@@ -975,51 +1335,51 @@ function HomePage() {
             onPointSizeChange={setPointSize}
           />
         </div>
-      </section>
 
-      <section className="results">
-        <div className="section-heading">
-          <div>
-            <h2>{t.results}</h2>
-            <p>{t.resultsHelp}</p>
+        <section className="results">
+          <div className="section-heading">
+            <div>
+              <h2>{t.results}</h2>
+              <p>{t.resultsHelp}</p>
+            </div>
+            <button type="button" className="secondary" onClick={exportResultsTable}>
+              {t.exportTable}
+            </button>
           </div>
-          <button type="button" className="secondary" onClick={exportResultsTable}>
-            {t.exportTable}
-          </button>
-        </div>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>{t.sample}</th>
-                <th>{t.sand}</th>
-                <th>{t.silt}</th>
-                <th>{t.clay}</th>
-                <th>{t.total}</th>
-                <th>{t.textureClass}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {samples.map((sample) => {
-                const valid = isValidSoilFractions(sample);
-                return (
-                  <tr key={sample.id} className={valid ? "" : "invalid-result"}>
-                    <td>{sample.label || t.untitledSample}</td>
-                    <td>{formatNumber(sample.sand)}%</td>
-                    <td>{formatNumber(sample.silt)}%</td>
-                    <td>{formatNumber(sample.clay)}%</td>
-                    <td>{formatNumber(totalFractions(sample))}%</td>
-                    <td>
-                      {valid
-                        ? textureLabel(classifySoilTexture(sample), locale)
-                        : validationMessageFor(sample, locale)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>{t.sample}</th>
+                  <th>{t.sand}</th>
+                  <th>{t.silt}</th>
+                  <th>{t.clay}</th>
+                  <th>{t.total}</th>
+                  <th>{t.textureClass}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {samples.map((sample) => {
+                  const valid = isValidSoilFractions(sample);
+                  return (
+                    <tr key={sample.id} className={valid ? "" : "invalid-result"}>
+                      <td>{sample.label || t.untitledSample}</td>
+                      <td>{formatNumber(sample.sand)}%</td>
+                      <td>{formatNumber(sample.silt)}%</td>
+                      <td>{formatNumber(sample.clay)}%</td>
+                      <td>{formatNumber(totalFractions(sample))}%</td>
+                      <td>
+                        {valid
+                          ? textureLabel(classifySoilTexture(sample), locale)
+                          : validationMessageFor(sample, locale)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </section>
 
       <section className="article-teaser-section">
@@ -1038,12 +1398,35 @@ function HomePage() {
               <p className="article-kicker">{article.textureClass}</p>
               <h3>{article.title}</h3>
               <p>{article.excerpt}</p>
-              <Link to={`/articles/${article.slug}`}>{t.readArticle}</Link>
+              <Link to={`/articles/${article.slug}`}>
+                {t.readArticle}
+                <span className="sr-only">
+                  {" "}
+                  {t.readArticleAbout} {article.textureClass}
+                </span>
+              </Link>
             </article>
           ))}
         </div>
       </section>
-    </main>
+      </main>
+      <footer className="site-footer">
+        <Link className="site-brand" to="/">
+          <span className="site-brand-mark" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          Soil Logic
+        </Link>
+        <nav aria-label={t.footerNav}>
+          <Link to="/articles">{t.soilGuides}</Link>
+          <Link to="/portfolio">{t.consultant}</Link>
+          <a href="mailto:contact@soil-logic.com">contact@soil-logic.com</a>
+        </nav>
+        <span>&copy; 2026 Soil Logic</span>
+      </footer>
+    </div>
   );
 }
 
@@ -1305,6 +1688,8 @@ function TextureTriangle({
     image.src = url;
   }
 
+  const ink = STYLE_INKS[triangleStyle.id];
+
   return (
     <figure className="triangle-figure">
       <div className="triangle-toolbar" aria-label={t.textureTriangle}>
@@ -1414,6 +1799,7 @@ function TextureTriangle({
               fontSize: visual.labelSize,
               fontWeight: visual.labelWeight,
               strokeWidth: visual.labelStrokeWidth,
+              stroke: ink?.halo,
             }}
             textAnchor="middle"
           >
@@ -1502,6 +1888,7 @@ function TextureTriangle({
                   x={point.x + 11}
                   y={point.y - 9 - (index % 2) * 12}
                   className="sample-label"
+                  style={ink ? { fill: ink.sampleText, stroke: ink.halo } : undefined}
                 >
                   {sample.label}
                 </text>
@@ -1536,7 +1923,7 @@ function TextureTriangle({
                     stroke="#ffffff"
                     strokeWidth={visual.pointStrokeWidth}
                   />
-                  <text x={x + 16} y={y} className="legend-label">
+                  <text x={x + 16} y={y} className="legend-label" style={ink ? { fill: ink.legendText } : undefined}>
                     {sample.label}
                   </text>
                 </g>
