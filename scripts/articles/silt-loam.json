@@ -1,0 +1,58 @@
+{
+  "source": "USDA Silt Loam Soil Analysis.md",
+  "intro": null,
+  "sections": [
+    {
+      "label": "Introduction",
+      "divider": null
+    },
+    {
+      "label": "Taxonomic Boundaries",
+      "divider": "Classification"
+    },
+    {
+      "label": "Soil Hydraulics",
+      "divider": "Water"
+    },
+    {
+      "label": "Geomechanics",
+      "divider": "Engineering"
+    },
+    {
+      "label": "Erosion and Crusting",
+      "divider": "Environment"
+    },
+    {
+      "label": "Agronomic Management",
+      "divider": "Management"
+    },
+    {
+      "label": "Conclusion",
+      "divider": "Synthesis",
+      "h2": "A Productive but Fragile Soil"
+    }
+  ],
+  "facts": [
+    [
+      "15–20%",
+      "Plant-available water by volume"
+    ],
+    [
+      "0.25–0.45",
+      "USLE erodibility K-factor (SI)"
+    ],
+    [
+      "20–40%",
+      "Liquid limit (USCS class ML)"
+    ],
+    [
+      "&lt; 15",
+      "Plasticity index (low)"
+    ]
+  ],
+  "fixes": [],
+  "footer": {
+    "title": "USDA Silt Loam Soil Texture Class — Scientific Analysis",
+    "note": "Based on USDA, WRB, USCS and AASHTO particle-size standards, the Rosetta pedotransfer functions, the USLE/RUSLE erodibility framework, and peer-reviewed literature in soil physics, geotechnics, and conservation agronomy. Superscript numbers refer to the works cited below."
+  }
+}

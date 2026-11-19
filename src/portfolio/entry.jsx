@@ -5,7 +5,7 @@
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import Portfolio from './Portfolio.jsx';
-import '../styles.css';
+import '../styles/index.css';
 
 const root = document.getElementById('root');
 const page = <StrictMode><Portfolio /></StrictMode>;

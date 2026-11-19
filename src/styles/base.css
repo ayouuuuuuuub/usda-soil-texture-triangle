@@ -1,0 +1,650 @@
+/* Soil Logic design system: tokens, reset, type, buttons, header and footer.
+   The palette is read off a soil profile: limestone paper, humus ink, and one colour per fraction of
+   the texture triangle (sand = ochre, silt = slate, clay = iron oxide). Those three colours mean the
+   same thing everywhere on the site: inputs, bars, axes, the mark. */
+
+:root {
+  --paper: #f3eee2;
+  --paper-2: #e9e2d1;
+  --paper-3: #ddd4bf;
+  --card: #fbf8f1;
+  --ink: #1a1612;
+  --ink-2: #453d33;
+  --muted: #6f6557;
+  --line: #d8cfbb;
+  --line-strong: #b9ae96;
+
+  --sand: #d39a2c;
+  --sand-ink: #8a5f0c;
+  --sand-wash: #f4e3b8;
+  --silt: #5f8a8b;
+  --silt-ink: #33605f;
+  --silt-wash: #d3e2df;
+  --clay: #b4421a;
+  --clay-bright: #dc6534;
+  --clay-wash: #f1d3c2;
+
+  --moss: #35604a;
+  --moss-wash: #d5e3d6;
+  --night: #17130f;
+  --night-2: #241e18;
+  --on-night: #f3eee2;
+  --on-night-muted: #b5a995;
+
+  --f-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
+  --f-text: "Instrument Sans Variable", "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+  --f-read: "Newsreader Variable", Newsreader, Georgia, "Times New Roman", serif;
+
+  --gutter: clamp(18px, 4vw, 56px);
+  --wrap: min(100% - 2 * var(--gutter), 1360px);
+  --r-s: 8px;
+  --r-m: 14px;
+  --r-l: 22px;
+  --header-h: 68px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --shadow-1: 0 1px 0 rgba(26, 22, 18, 0.04), 0 8px 24px -12px rgba(26, 22, 18, 0.18);
+  --shadow-2: 0 2px 0 rgba(26, 22, 18, 0.05), 0 24px 48px -24px rgba(26, 22, 18, 0.32);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 16px);
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-text);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--clay);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wrap {
+  width: var(--wrap);
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------------------------------------------------------------------------------------- type */
+
+.mono,
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top: 0;
+  border-bottom: 9px solid var(--clay);
+}
+
+.display {
+  font-family: var(--f-display);
+  font-weight: 620;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.display em,
+.serif-em {
+  font-family: var(--f-read);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+h2.display {
+  font-size: clamp(2rem, 3.6vw, 3.4rem);
+}
+
+.lead {
+  color: var(--ink-2);
+  font-size: clamp(1.02rem, 1.2vw, 1.15rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------------------------------- buttons */
+
+.btn {
+  --btn-bg: var(--ink);
+  --btn-fg: var(--paper);
+  --btn-bd: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--btn-bd);
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--f-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s var(--ease-out);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--ink);
+  --btn-bd: var(--line-strong);
+}
+
+.btn--clay {
+  --btn-bg: var(--clay);
+  --btn-bd: var(--clay);
+  --btn-fg: #fff;
+}
+
+.btn--paper {
+  --btn-bg: var(--paper);
+  --btn-bd: var(--paper);
+  --btn-fg: var(--ink);
+}
+
+.btn--line-light {
+  --btn-bg: transparent;
+  --btn-fg: var(--on-night);
+  --btn-bd: rgba(243, 238, 226, 0.34);
+}
+
+.btn--small {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.82rem;
+}
+
+.arrow {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.btn .arrow {
+  transition: transform 0.25s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    --btn-bg: var(--clay);
+    --btn-bd: var(--clay);
+    --btn-fg: #fff;
+  }
+
+  .btn--ghost:hover {
+    --btn-bg: var(--ink);
+    --btn-bd: var(--ink);
+    --btn-fg: var(--paper);
+  }
+
+  .btn--clay:hover {
+    --btn-bg: var(--ink);
+    --btn-bd: var(--ink);
+  }
+
+  .btn--paper:hover {
+    --btn-bg: var(--sand);
+    --btn-bd: var(--sand);
+    --btn-fg: var(--ink);
+  }
+
+  .btn--line-light:hover {
+    --btn-bg: var(--on-night);
+    --btn-bd: var(--on-night);
+    --btn-fg: var(--ink);
+  }
+
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* A text link whose underline draws from the left. */
+.link {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 0.3s var(--ease-out), color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--clay);
+    background-size: 0 1px;
+    background-position: 100% 100%;
+  }
+}
+
+/* -------------------------------------------------------------------------------------- header */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__in {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 3vw, 40px);
+  min-height: var(--header-h);
+}
+
+/* The Soil Logic logo: three slanted strata (forest, sage, sand) and the name in Red Hat Display. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  color: inherit;
+  font-family: "Red Hat Display Variable", "Red Hat Display", system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand__mark {
+  display: inline-grid;
+  align-content: center;
+  gap: 4px;
+  width: 23px;
+  flex: none;
+  transform: skewY(-12deg);
+}
+
+.brand__mark i {
+  display: block;
+  height: 4px;
+  background: #214b3f;
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.brand__mark i:nth-child(2) {
+  background: #7a886a;
+}
+
+.brand__mark i:nth-child(3) {
+  background: #c9b67a;
+}
+
+/* on a dark ground the forest stratum turns to paper so the mark keeps its three layers */
+.site-footer .brand__mark i:first-child,
+.pf-foot .brand__mark i:first-child {
+  background: var(--paper);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover .brand__mark i:nth-child(2) {
+    transform: translateX(3px);
+  }
+
+  .brand:hover .brand__mark i:nth-child(3) {
+    transform: translateX(6px);
+  }
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: auto;
+}
+
+.site-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--ink);
+  background: var(--paper-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-nav a:hover {
+    color: var(--ink);
+    background: var(--paper-2);
+  }
+}
+
+.site-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.lang button {
+  min-width: 38px;
+  min-height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.lang button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.consult {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.consult p {
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------------------- footer */
+
+.site-footer {
+  margin-top: clamp(64px, 9vw, 128px);
+  background: var(--night);
+  color: var(--on-night);
+}
+
+.site-footer__in {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 5vw, 72px);
+  padding-block: clamp(48px, 6vw, 84px) 28px;
+}
+
+.site-footer__lead p {
+  max-width: 34ch;
+  margin-top: 16px;
+  color: var(--on-night-muted);
+}
+
+.site-footer h2 {
+  margin-bottom: 14px;
+  color: var(--on-night-muted);
+}
+
+.site-footer li + li {
+  margin-top: 6px;
+}
+
+.site-footer li a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--on-night);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 4px) / 0 1px no-repeat;
+  transition: background-size 0.3s var(--ease-out), color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-footer li a:hover {
+    color: var(--sand);
+    background-size: 100% 1px;
+  }
+}
+
+.site-footer__base {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(243, 238, 226, 0.16);
+  color: var(--on-night-muted);
+}
+
+/* The wordmark set as large as the page allows, cut by the bottom edge like a horizon. */
+.site-footer__word {
+  overflow: hidden;
+  height: clamp(64px, 15.5vw, 236px);
+  font-family: var(--f-display);
+  font-size: clamp(88px, 21.5vw, 330px);
+  font-weight: 700;
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.06em;
+  line-height: 0.8;
+  white-space: nowrap;
+  text-align: center;
+  color: transparent;
+  background: linear-gradient(180deg, var(--sand) 0 34%, var(--silt) 34% 62%, var(--clay-bright) 62% 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  user-select: none;
+}
+
+@media (max-width: 860px) {
+  .site-nav a {
+    padding: 0 9px;
+    font-size: 0.84rem;
+  }
+
+  .consult p {
+    display: none;
+  }
+
+  .site-footer__in {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .site-footer__lead {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  /* two rows of header are too much to pin on a phone: it scrolls away with the page */
+  :root {
+    --header-h: 0px;
+  }
+
+  .site-header {
+    position: static;
+  }
+
+  .site-header__in {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding-block: 10px;
+  }
+
+  .site-nav {
+    order: 3;
+    width: 100%;
+    margin-inline: -9px;
+  }
+
+  .site-nav a {
+    min-height: 44px;
+  }
+
+  .site-actions {
+    margin-left: auto;
+  }
+
+  .lang button {
+    min-height: 38px;
+    min-width: 42px;
+  }
+
+  .consult .btn {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

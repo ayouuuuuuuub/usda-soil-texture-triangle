@@ -1,0 +1,1191 @@
+/* The calculator page. */
+
+.home main > section {
+  margin-top: clamp(72px, 9vw, 136px);
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px 40px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
+.section-head > div {
+  max-width: 62ch;
+}
+
+.section-head .eyebrow {
+  margin-bottom: 18px;
+}
+
+.section-head .lead {
+  margin-top: 14px;
+}
+
+/* ------------------------------------------------------------------------------------ workbench */
+
+.home main > .bench {
+  margin-top: clamp(28px, 4vw, 56px);
+}
+
+.bench {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  grid-template-areas:
+    "intro plot"
+    "ledger plot";
+  grid-template-rows: auto 1fr;
+  gap: clamp(24px, 3vw, 40px) clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.bench__intro {
+  grid-area: intro;
+}
+
+.bench__intro h1 {
+  margin-top: 20px;
+  font-size: clamp(2.3rem, 4.5vw, 4.25rem);
+}
+
+.bench__intro .lead {
+  max-width: 52ch;
+  margin-top: 20px;
+}
+
+.bench__note {
+  margin-top: 18px;
+  color: var(--muted);
+}
+
+[data-enter] {
+  animation: enter 0.8s var(--ease-out) both;
+}
+
+.ledger[data-enter] {
+  animation-delay: 0.12s;
+}
+
+.bench__plot[data-enter] {
+  animation-delay: 0.06s;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* ---------------------------------------------------------------------------------- the ledger */
+
+.ledger {
+  grid-area: ledger;
+  min-width: 0;
+}
+
+.ledger__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid var(--ink);
+}
+
+.ledger__head h2 {
+  font-family: var(--f-display);
+  font-size: 1.5rem;
+  font-weight: 620;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.ledger__count {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.ledger__count strong {
+  color: var(--ink);
+  font-family: var(--f-mono);
+  font-weight: 500;
+}
+
+.ledger__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ledger__help {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.ledger__message {
+  min-height: 0;
+  color: var(--clay);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.ledger__message:not(:empty) {
+  margin-top: 8px;
+}
+
+.ledger__empty {
+  margin-top: 16px;
+  padding: 28px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-m);
+  color: var(--muted);
+  text-align: center;
+}
+
+.rows {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) repeat(3, minmax(64px, 84px)) auto 40px;
+  gap: 10px 10px;
+  align-items: end;
+  padding: 14px 12px 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--card);
+  transition: border-color 0.18s ease, box-shadow 0.25s ease, transform 0.25s var(--ease-out);
+}
+
+.row[data-active] {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-1);
+}
+
+.row[data-invalid] {
+  border-color: color-mix(in srgb, var(--clay) 55%, var(--line));
+  background: color-mix(in srgb, var(--clay-wash) 38%, var(--card));
+}
+
+.row__dot {
+  align-self: end;
+  width: 12px;
+  height: 12px;
+  margin-bottom: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--line-strong);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+
+.row label,
+.row__total {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.row label > span,
+.row__total > span {
+  color: var(--muted);
+  font-family: var(--f-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.row input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  font-size: 0.95rem;
+  font-weight: 550;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.row input:hover {
+  border-color: var(--line-strong);
+}
+
+.row input:focus-visible {
+  outline: 0;
+  border-color: var(--ink);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.row__f input {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  border-bottom-width: 3px;
+}
+
+.row__f[data-f="sand"] input {
+  border-bottom-color: var(--sand);
+}
+
+.row__f[data-f="silt"] input {
+  border-bottom-color: var(--silt);
+}
+
+.row__f[data-f="clay"] input {
+  border-bottom-color: var(--clay);
+}
+
+.row__f input[aria-invalid="true"] {
+  background: #fff;
+}
+
+.row__total strong {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  min-width: 62px;
+  font-family: var(--f-mono);
+  font-size: 0.92rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.row[data-invalid] .row__total strong {
+  color: var(--clay);
+}
+
+.row__delete {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.row__delete:hover {
+  background: var(--clay-wash);
+  color: var(--clay);
+}
+
+.row__delete:active {
+  transform: scale(0.9);
+}
+
+.row__foot {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 22px;
+}
+
+/* The jar test in one line: what settles first (sand) to what stays in suspension (clay). */
+.jar {
+  flex: 1 1 120px;
+  display: flex;
+  height: 6px;
+  min-width: 80px;
+  max-width: 260px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--paper-3);
+}
+
+.jar i {
+  min-width: 0;
+  transition: flex-grow 0.45s var(--ease-out);
+}
+
+.jar i[data-f="sand"] {
+  flex: var(--a) 0 0;
+  background: var(--sand);
+}
+
+.jar i[data-f="silt"] {
+  flex: var(--b) 0 0;
+  background: var(--silt);
+}
+
+.jar i[data-f="clay"] {
+  flex: var(--c) 0 0;
+  background: var(--clay);
+}
+
+.row__class {
+  font-family: var(--f-display);
+  font-size: 1.02rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.row__error {
+  color: var(--clay);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ------------------------------------------------------------------------------------ the plot */
+
+.bench__plot {
+  grid-area: plot;
+  position: sticky;
+  top: calc(var(--header-h) + 14px);
+  min-width: 0;
+}
+
+.plot {
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  background: var(--card);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+
+.plot__read {
+  display: flex;
+  align-items: center;
+  gap: 10px 22px;
+  min-height: 62px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.plot__vals {
+  display: flex;
+  gap: 18px;
+}
+
+.plot__vals div {
+  display: grid;
+  gap: 0;
+  min-width: 44px;
+  padding-left: 9px;
+  border-left: 3px solid var(--line-strong);
+}
+
+.plot__vals div[data-f="sand"] {
+  border-color: var(--sand);
+}
+
+.plot__vals div[data-f="silt"] {
+  border-color: var(--silt);
+}
+
+.plot__vals div[data-f="clay"] {
+  border-color: var(--clay);
+}
+
+.plot__vals dt {
+  color: var(--muted);
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plot__vals dd {
+  font-family: var(--f-mono);
+  font-size: 1.15rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.plot__class {
+  display: grid;
+  margin-left: auto;
+  text-align: right;
+}
+
+.plot__class .mono {
+  overflow: hidden;
+  max-width: 22ch;
+  color: var(--muted);
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plot__class strong {
+  font-family: var(--f-display);
+  font-size: 1.3rem;
+  font-weight: 640;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.plot__hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  color: var(--ink-2);
+  font-size: 0.92rem;
+  font-weight: 550;
+}
+
+.plot__hint-act {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.plot__hint-touch {
+  display: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .plot__hint-fine,
+  .plot__hint-act {
+    display: none;
+  }
+
+  .plot__hint-touch {
+    display: inline;
+  }
+}
+
+.plot__stage {
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.plot__svg {
+  width: 100%;
+  height: auto;
+  max-height: max(360px, calc(100vh - var(--header-h) - 318px));
+  animation: stage-in 1.3s var(--ease-in-out) 0.15s both;
+}
+
+/* The drawing opens from the triangle itself. */
+@keyframes stage-in {
+  from {
+    clip-path: polygon(50% 7.9%, 90.5% 88.8%, 9.5% 88.8%);
+  }
+
+  to {
+    clip-path: polygon(50% -110%, 205% 100%, -105% 100%);
+  }
+}
+
+.plot__svg .class-label,
+.plot__svg .tick-label,
+.plot__svg .axis-label,
+.plot__svg .sample-label,
+.plot__svg .legend-label {
+  font-family: var(--f-text);
+}
+
+.plot__svg .tick-label {
+  font-family: var(--f-mono);
+  font-weight: 500;
+}
+
+.plot__svg > g > circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: point-in 0.5s var(--ease-out) backwards;
+}
+
+@keyframes point-in {
+  from {
+    transform: scale(0);
+  }
+}
+
+.plot__overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.plot__overlay[data-grab] {
+  cursor: grab;
+}
+
+.plot__overlay[data-drag] {
+  cursor: grabbing;
+}
+
+.plot__region {
+  fill: rgba(255, 255, 255, 0.24);
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.75));
+  pointer-events: none;
+}
+
+.plot__guide {
+  pointer-events: none;
+}
+
+.plot__guide line {
+  stroke-width: 2;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+}
+
+.plot__guide .plot__guide-halo {
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-dasharray: none;
+  opacity: 0.7;
+}
+
+.plot__guide text {
+  fill: #fff;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.plot__guide[data-f="sand"] line:not(.plot__guide-halo) {
+  stroke: var(--sand-ink);
+}
+
+.plot__guide[data-f="sand"] rect {
+  fill: var(--sand);
+}
+
+.plot__guide[data-f="sand"] text {
+  fill: var(--ink);
+}
+
+.plot__guide[data-f="silt"] line:not(.plot__guide-halo) {
+  stroke: var(--silt-ink);
+}
+
+.plot__guide[data-f="silt"] rect {
+  fill: var(--silt-ink);
+}
+
+.plot__guide[data-f="clay"] line:not(.plot__guide-halo) {
+  stroke: var(--clay);
+}
+
+.plot__guide[data-f="clay"] rect {
+  fill: var(--clay);
+}
+
+.plot__reticle {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.plot__ring {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ring 1.4s var(--ease-out) infinite;
+  pointer-events: none;
+}
+
+@keyframes ring {
+  from {
+    transform: scale(0.7);
+    opacity: 1;
+  }
+
+  70%,
+  to {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.plot__tools {
+  display: grid;
+  gap: 12px;
+  padding: 14px 18px 12px;
+  border-top: 1px solid var(--line);
+}
+
+.plot__styles {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.plot__styles legend {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.plot__styles legend strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.plot__swatches {
+  display: flex;
+  gap: 3px;
+}
+
+.plot__swatches label {
+  position: relative;
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 36px;
+  padding: 2px;
+  border: 1.5px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.2s var(--ease-out);
+}
+
+.plot__swatches svg {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px rgba(26, 22, 18, 0.14);
+}
+
+.plot__swatches label:hover {
+  transform: translateY(-2px);
+}
+
+.plot__swatches label:has(input:checked) {
+  border-color: var(--ink);
+}
+
+.plot__swatches label:has(input:focus-visible) {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+}
+
+.plot__row {
+  display: flex;
+  align-items: center;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+}
+
+.plot__size {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 150px;
+  max-width: 220px;
+  color: var(--muted);
+}
+
+.plot__size strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.plot__size input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.plot__size input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--ink) var(--slider-progress, 30%), var(--paper-3) var(--slider-progress, 30%));
+}
+
+.plot__size input::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--ink) var(--slider-progress, 30%), var(--paper-3) var(--slider-progress, 30%));
+}
+
+.plot__size input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border: 2px solid var(--card);
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+  transition: transform 0.15s ease;
+}
+
+.plot__size input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--card);
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.plot__size input:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.switch i {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--paper-3);
+  transition: background-color 0.2s ease;
+}
+
+.switch i::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.switch[aria-pressed="true"] i {
+  background: var(--moss);
+}
+
+.switch[aria-pressed="true"] i::after {
+  transform: translateX(14px);
+}
+
+.plot__exports {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.plot figcaption {
+  padding: 0 18px 12px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.plot figcaption span {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------------------------------- results */
+
+.results h2.display,
+.classes h2.display {
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+}
+
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tally li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tally .mono {
+  color: var(--clay);
+  text-transform: none;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--card);
+}
+
+table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px 18px;
+  text-align: left;
+}
+
+th {
+  border-bottom: 1px solid var(--ink);
+  color: var(--muted);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+td {
+  border-bottom: 1px solid var(--line);
+  font-family: var(--f-mono);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background: var(--paper);
+}
+
+td:first-child,
+td:last-child {
+  font-family: var(--f-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+td:last-child {
+}
+
+.invalid-result td:last-child {
+  color: var(--clay);
+}
+
+/* --------------------------------------------------------------------------------------- method */
+
+.method {
+  padding-block: clamp(56px, 7vw, 104px);
+  border-block: 1px solid var(--line);
+  background: var(--paper-2);
+}
+
+.method__in {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+
+.method__lead {
+  margin: 22px 0 20px;
+  font-family: var(--f-display);
+  font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+  font-weight: 560;
+  font-variation-settings: "opsz" 48;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.method__steps h2 {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink);
+}
+
+.method__steps ol {
+  counter-reset: step;
+}
+
+.method__steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line-strong);
+  font-size: 1.05rem;
+  font-weight: 550;
+}
+
+.method__steps li::before {
+  content: counter(step, decimal-leading-zero);
+  color: var(--clay);
+  font-family: var(--f-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------------------- consulting band */
+
+.band__in {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  overflow: hidden;
+  border-radius: var(--r-l);
+  background: var(--night);
+  color: var(--on-night);
+}
+
+.band__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(32px, 6vw, 88px);
+}
+
+.band__copy .eyebrow {
+  color: var(--on-night-muted);
+}
+
+.band__copy .eyebrow::before {
+  border-bottom-color: var(--sand);
+}
+
+.band__copy h2 {
+  margin-top: 22px;
+  font-size: clamp(2rem, 3.7vw, 3.5rem);
+}
+
+.band__copy h2 em {
+  color: var(--sand);
+}
+
+.band__copy > p:not(.eyebrow) {
+  max-width: 52ch;
+  margin-top: 22px;
+  color: var(--on-night-muted);
+  font-size: 1.05rem;
+}
+
+.band__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px 26px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.band__actions .link:hover {
+  color: var(--sand);
+}
+
+.band__photo {
+  position: relative;
+  display: block;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.band__photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .band__in:hover .band__photo img {
+    transform: scale(1.04);
+  }
+}
+
+/* ----------------------------------------------------------------------------------- responsive */
+
+@media (max-width: 1080px) {
+  .bench {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "intro"
+      "ledger"
+      "plot";
+  }
+
+  .bench__plot {
+    position: static;
+  }
+
+  .plot__svg {
+    max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .method__in,
+  .band__in {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .band__photo {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 12px repeat(3, minmax(0, 1fr)) 44px;
+    padding: 12px 8px 12px 12px;
+  }
+
+  .row__label {
+    grid-column: 2 / 5;
+  }
+
+  .row__dot {
+    grid-row: 1;
+  }
+
+  .row__delete {
+    grid-row: 1;
+    grid-column: 5;
+    width: 44px;
+    height: 44px;
+  }
+
+  .row__f:nth-of-type(2) {
+    grid-column: 2;
+  }
+
+  .row__total {
+    grid-column: 5;
+    grid-row: 2;
+  }
+
+  .row__total strong {
+    min-width: 0;
+    font-size: 0.78rem;
+  }
+
+  .row__total > span {
+    font-size: 0.58rem;
+  }
+
+  .row input {
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  .row__foot {
+    grid-column: 2 / -1;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+
+  .ledger__actions .btn {
+    min-height: 44px;
+  }
+
+  .plot__read {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+  }
+
+  .plot__vals {
+    gap: 12px;
+  }
+
+  .plot__tools {
+    padding-inline: 14px;
+  }
+
+  .plot__swatches {
+    flex-wrap: wrap;
+  }
+
+  .plot__swatches label {
+    flex: 0 0 calc((100% - 27px) / 10);
+    max-width: none;
+    padding: 3px;
+  }
+
+  .plot__exports {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .plot__exports .btn {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .switch {
+    min-height: 44px;
+  }
+
+  .section-head .btn {
+    width: 100%;
+  }
+
+  .band__actions .btn {
+    width: 100%;
+  }
+}
+
+/* Class names start with a capital, whatever the language. */
+.row__class::first-letter,
+.plot__class strong::first-letter,
+.tally b::first-letter,
+td:last-child::first-letter {
+  text-transform: uppercase;
+}
+
+.plot__class strong,
+.tally b {
+  display: inline-block;
+  font-weight: inherit;
+}

@@ -6,5 +6,6 @@ export const meta = {
   description: 'Soil surveys, land and irrigation suitability, GIS and climate vulnerability studies by Ayoub, State Engineer in Agronomy.',
   canonical: 'https://soil-logic.com/portfolio',
   image: 'https://soil-logic.com/portfolio/share.jpg',
+  themeColor: '#f4e8da',
   imageAlt: 'Soil Logic: soil, water and land studies. A map of Morocco with the regions studied.',
 };

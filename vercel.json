@@ -5,8 +5,16 @@
       "destination": "/portfolio/index.html"
     },
     {
-      "source": "/((?!robots.txt|sitemap.xml|assets/.*|.*\\..*).*)",
-      "destination": "/index.html"
+      "source": "/articles",
+      "destination": "/articles/index.html"
+    },
+    {
+      "source": "/articles/(sandy-clay-loam|silty-clay-loam|loamy-sand|sandy-loam|sandy-clay|silty-clay|silt-loam|clay-loam|sand|loam|silt|clay)",
+      "destination": "/articles/$1/index.html"
+    },
+    {
+      "source": "/((?!robots.txt|sitemap.xml|assets/.*|.*\\..*).+)",
+      "destination": "/app.html"
     }
   ]
 }

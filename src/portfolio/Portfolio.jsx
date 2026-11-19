@@ -1,31 +1,25 @@
-// Soil Logic portfolio page. This file is the source of truth: edit it directly.
+// Soil Logic portfolio page. The words live in ./data.js; this file is the page.
 //
-// A bespoke page, scoped under .pf in ./portfolio.css. Palette: the Soil Logic mark (paper, ink, forest,
-// sage, sand) plus one new colour, clay (#b4532f), taken from the red soil in the hero photograph.
-// Motion follows one plan (see the motion block in portfolio.css): the hero plays once on load, each
-// block answers the scroll once (rules drawn like survey lines, photographs uncovered like a core being
-// lowered, headings rising word by word), a depth ruler follows the scroll, project rows open and close,
-// and the Moroccan projects sit beside a map of the country's regions (MissionMap.jsx) that answers the
-// list and is answered by it. The dark bands carry a living contour map (contours.js) that
-// bends around the pointer, and photographs ripple like water under it (liquid.js). Everything rests
-// under prefers-reduced-motion.
+// One idea runs through it: the calculator on the homepage places a soil in a triangle by its share of
+// sand, silt and clay, and this page places every study in the same kind of triangle by its share of
+// soil science and agronomy, data science and GIS, and environment work. The hero is a drawing of a piece of land with the things an
+// agronomist reads in it marked on it; the studies can be read two ways (by field, on the mixture
+// diagram, or by region, on a map of Morocco); the flagship study is told as a soil log, phase by phase.
 //
-// Photographs are stand-ins from Wikimedia Commons (credits in /portfolio/credits.html) to be replaced by
-// the client's own fieldwork photographs. Privacy: no employer name, no years of experience, no contract
-// values, internships described by place type only.
+// The page is rendered to HTML at build time (scripts/prerender.mjs) so it must render without a
+// browser: everything that touches window or document lives in an effect.
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { startContours } from './contours.js';
-import { mountLiquid } from './liquid.js';
 import MissionMap from './MissionMap.jsx';
+import { BRAKNA_PHASES, BRIEF, CERTS, DECK, EMAIL, FACTS, FIELDS, LANGUAGES, MAIL, METHOD, MIX_AXES, NOTES, PHOTO, PROJECTS, TOOL_GROUPS, TRAINING } from './data.js';
 import { meta } from './meta.js';
 import './portfolio.css';
 
-const PHOTO = '/portfolio/photos/';
-const EMAIL = 'mailto:contact@soil-logic.com';
-const DECK = '/portfolio/assets/ayoub-professional-pitch-deck.pdf';
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pad = n => String(n).padStart(2, '0');
 
 function usePortfolioMetadata() {
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     const previousTitle = document.title;
     const undo = [];
     document.title = meta.title;
@@ -38,32 +32,22 @@ function usePortfolioMetadata() {
       undo.push(() => { if (created) node.remove(); else if (old === null) node.removeAttribute(key); else node.setAttribute(key, old); });
       return node;
     };
-    for (const [name, value] of [['description', meta.description], ['twitter:card', 'summary_large_image'], ['twitter:title', meta.title], ['twitter:description', meta.description], ['twitter:image', meta.image], ['theme-color', '#17302a']]) {
+    for (const [name, value] of [['description', meta.description], ['twitter:card', 'summary_large_image'], ['twitter:title', meta.title], ['twitter:description', meta.description], ['twitter:image', meta.image], ['theme-color', meta.themeColor]]) {
       const node = set('meta[name="' + name + '"]', 'meta', 'content', value); node.setAttribute('name', name);
     }
     for (const [name, value] of [['og:type', 'website'], ['og:title', meta.title], ['og:description', meta.description], ['og:url', meta.canonical], ['og:image', meta.image]]) {
       const node = set('meta[property="' + name + '"]', 'meta', 'content', value); node.setAttribute('property', name);
     }
     const canonical = set('link[rel="canonical"]', 'link', 'href', meta.canonical); canonical.setAttribute('rel', 'canonical');
-    // the mono face for depth marks and data labels, only on this page
-    if (!document.head.querySelector('link[href*="Red+Hat+Mono"]')) {
-      const mono = document.createElement('link');
-      mono.rel = 'stylesheet';
-      mono.href = 'https://fonts.googleapis.com/css2?family=Red+Hat+Mono:wght@400;500&display=swap';
-      document.head.appendChild(mono);
-      undo.push(() => mono.remove());
-    }
     return () => { document.title = previousTitle; undo.reverse().forEach(fn => fn()); };
   }, []);
 }
 
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// Scroll reveals. Marks the page as animated (so nothing is hidden without JS or under reduced motion),
-// then tags each [data-rv] block with data-in the first time it comes on screen; the CSS does the rest.
-// Attributes, not classes: React rewrites className on the rows that open and close.
-function useMotion(rootRef) {
-  useLayoutEffect(() => {
+// Scroll reveals. Marks the page as animated (so nothing is hidden without JavaScript or under reduced
+// motion), then tags each [data-rv] block with data-in the first time it comes on screen; the CSS does
+// the rest.
+function useReveal(rootRef) {
+  useIsoLayoutEffect(() => {
     const root = rootRef.current;
     if (!root || !('IntersectionObserver' in window) || prefersReducedMotion()) return undefined;
     root.setAttribute('data-motion', '');
@@ -73,30 +57,36 @@ function useMotion(rootRef) {
         entry.target.setAttribute('data-in', '');
         io.unobserve(entry.target);
       }
-    }, { rootMargin: '0px 0px -10% 0px' });
+    }, { rootMargin: '0px 0px -12% 0px' });
     root.querySelectorAll('[data-rv]').forEach(node => io.observe(node));
-    const html = document.documentElement;
-    const oldScroll = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'smooth';
-    return () => { io.disconnect(); root.removeAttribute('data-motion'); html.style.scrollBehavior = oldScroll; };
+    return () => { io.disconnect(); root.removeAttribute('data-motion'); };
   }, [rootRef]);
 }
 
-// The living contour map of a dark band: a canvas behind the band's content, and (on a mouse) a small
-// elevation reading that follows the pointer. The band keeps its static contour drawing until the canvas
-// has drawn, and for good under reduced motion.
-function Topo({ preset, readout = false, alpha, indexAlpha }) {
-  const canvas = useRef(null);
-  const tag = useRef(null);
-  useEffect(() => {
-    if (!canvas.current || prefersReducedMotion()) return undefined;
-    return startContours(canvas.current, tag.current, { preset, alpha, indexAlpha });
-  }, [preset, alpha, indexAlpha]);
+// The Soil Logic mark: three slanted soil strata (styles in src/styles/base.css).
+function Mark() {
+  return <span className="brand__mark" aria-hidden="true"><i /><i /><i /></span>;
+}
+
+function Arrow({ down = false }) {
   return (
-    <>
-      <canvas className="pf-topo" ref={canvas} aria-hidden="true" />
-      {readout ? <span className="pf-topo__tag" ref={tag} aria-hidden="true" /> : null}
-    </>
+    <svg className="arrow" data-down={down ? '' : undefined} viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Img({ name, wide = 1200, alt, sizes = '(max-width: 760px) 100vw, 50vw', className, eager = false }) {
+  return (
+    <img
+      className={className}
+      src={`${PHOTO}${name}-640.webp`}
+      srcSet={`${PHOTO}${name}-640.webp 640w, ${PHOTO}${name}-${wide}.webp ${wide}w`}
+      sizes={sizes}
+      alt={alt}
+      loading={eager ? undefined : 'lazy'}
+      decoding="async"
+    />
   );
 }
 
@@ -105,9 +95,8 @@ function Topo({ preset, readout = false, alpha, indexAlpha }) {
 function Title({ as: Tag = 'h2', id, text, em, className }) {
   const words = text.split(' ');
   const emWords = em ? em.split(' ') : [];
-  const step = `${Math.round(Math.min(46, 460 / (words.length + emWords.length)))}ms`;
   const word = (w, i) => (
-    <React.Fragment key={i}><span className="pf-w"><span style={{ '--i': i, '--step': step }}>{w}</span></span>{' '}</React.Fragment>
+    <React.Fragment key={i}><span className="pf-w"><span style={{ '--i': i }}>{w}</span></span>{' '}</React.Fragment>
   );
   return (
     <Tag id={id} className={className} aria-label={em ? `${text} ${em}` : text}>
@@ -119,7 +108,7 @@ function Title({ as: Tag = 'h2', id, text, em, className }) {
   );
 }
 
-// A figure that counts up to its value once ("6.2M+ MAD" counts the 6.2 and keeps the rest).
+// A figure that counts up to its value once ("7.5M+ MAD" counts the 7.5 and keeps the rest).
 function Count({ value, delay = 0 }) {
   const ref = useRef(null);
   useEffect(() => {
@@ -144,378 +133,102 @@ function Count({ value, delay = 0 }) {
   return <><span className="sr-only">{value}</span><span ref={ref} aria-hidden="true">{value}</span></>;
 }
 
-// The page read as a soil profile: a depth ruler on the right edge whose marker goes down as you scroll
-// (a thin progress line on small screens). Decorative, so hidden from assistive tech.
-function Depth() {
-  const track = useRef(null);
-  const mark = useRef(null);
-  const label = useRef(null);
-  const bar = useRef(null);
-  useEffect(() => {
-    let raf = 0;
-    let last = -1;
-    const update = () => {
-      raf = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      if (mark.current && track.current) mark.current.style.transform = `translate3d(0, ${p * track.current.clientHeight}px, 0)`;
-      if (bar.current) bar.current.style.transform = `scaleX(${p})`;
-      const cm = Math.round(p * 120);
-      if (cm !== last && label.current) { last = cm; label.current.textContent = `${cm} cm`; }
-    };
-    const queue = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener('scroll', queue, { passive: true });
-    window.addEventListener('resize', queue);
-    return () => { window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue); cancelAnimationFrame(raf); };
-  }, []);
+// A study's mix as one bar: soil science and agronomy, data science and GIS, environment.
+function MixBar({ mix }) {
   return (
-    <div className="pf-depth" aria-hidden="true">
-      <div className="pf-depth__track" ref={track}>
-        <span className="pf-depth__mark" ref={mark}><b ref={label}>0 cm</b></span>
-      </div>
-      <span className="pf-progress" ref={bar} />
-    </div>
+    <span className="pf-mix" aria-hidden="true" style={{ '--a': mix[0], '--b': mix[1], '--c': mix[2] }}>
+      <i data-f="soil" /><i data-f="data" /><i data-f="land" />
+    </span>
   );
 }
-
-// The main call to action leans toward the pointer (mouse only).
-function Magnet({ children }) {
-  const outer = useRef(null);
-  const inner = useRef(null);
-  useEffect(() => {
-    const box = outer.current;
-    const node = inner.current;
-    if (!box || !node || prefersReducedMotion() || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
-    const move = event => {
-      const r = box.getBoundingClientRect();
-      const x = (event.clientX - (r.left + r.width / 2)) * 0.22;
-      const y = (event.clientY - (r.top + r.height / 2)) * 0.32;
-      node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-    };
-    const leave = () => { node.style.transform = ''; };
-    box.addEventListener('pointermove', move);
-    box.addEventListener('pointerleave', leave);
-    return () => { box.removeEventListener('pointermove', move); box.removeEventListener('pointerleave', leave); node.style.transform = ''; };
-  }, []);
-  return <span className="pf-magnet" ref={outer}><span ref={inner}>{children}</span></span>;
-}
-
-// True once the element is mostly on screen (one-shot, for the method line).
-function useSeen() {
-  const ref = useRef(null);
-  const [seen, setSeen] = useState(false);
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || seen) return undefined;
-    if (!('IntersectionObserver' in window)) { setSeen(true); return undefined; }
-    const io = new IntersectionObserver(entries => {
-      if (entries.some(e => e.isIntersecting)) { setSeen(true); io.disconnect(); }
-    }, { threshold: 0.35 });
-    io.observe(node);
-    return () => io.disconnect();
-  }, [seen]);
-  return [ref, seen];
-}
-
-function Logo() {
-  return <span className="pf-mark" aria-hidden="true"><i /><i /><i /></span>;
-}
-
-function Arrow() {
-  return (
-    <svg className="pf-arrow" viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function Img({ name, wide = 1200, alt, sizes = '(max-width: 760px) 100vw, 50vw', className, eager = false }) {
-  return (
-    <img
-      className={className}
-      src={`${PHOTO}${name}-640.webp`}
-      srcSet={`${PHOTO}${name}-640.webp 640w, ${PHOTO}${name}-${wide}.webp ${wide}w`}
-      sizes={sizes}
-      alt={alt}
-      loading={eager ? undefined : 'lazy'}
-      decoding="async"
-    />
-  );
-}
-
-/* ------------------------------------------------------------------------------------------- data */
-
-// 20+ projects (user-confirmed); the CV names: Brakna, Marrakech biodiversity, Marrakech green spaces, PADERMO, CESAR II, the regional
-// housing plans, three forests, two regional coastal schemes and the Zat watershed (12); regions: Brakna, and in
-// Morocco Marrakech-Safi, Oriental, Casablanca-Settat, Béni Mellal-Khénifra, Guelmim-Oued Noun, Rabat-Salé-Kénitra
-// and Laâyoune-Sakia El Hamra (8); contracts won: housing plans over 5M MAD plus urban biodiversity 1.2M MAD.
-const FACTS = [
-  ['20+', 'projects contributed to, from soil surveys to regional plans'],
-  ['8', 'regions covered across Morocco and Mauritania'],
-  ['6.2M+ MAD', 'in contracts won with proposals I helped write'],
-  ['2', 'new lines of work opened for the firm: housing plans and urban biodiversity'],
-];
-
-const FIELDS = [
-  {
-    no: '01',
-    title: 'Soil and land suitability',
-    lines: ['Soil surveys and profile descriptions', 'Crop and irrigation suitability', 'Fertility, salinity and drainage diagnosis', 'Fertilisation programmes by crop'],
-  },
-  {
-    no: '02',
-    title: 'GIS and environmental data',
-    lines: ['Multicriteria stratification and sampling design', 'Remote sensing with Google Earth Engine', 'Clean, structured geodatabases', 'Thematic maps and atlases'],
-  },
-  {
-    no: '03',
-    title: 'Climate, environment and territory',
-    lines: ['Climate vulnerability by district', 'Biodiversity and ecosystem services', 'Environmental safeguards (IFAD SECAP)', 'Regional and territorial planning studies'],
-  },
-];
-
-const BRAKNA_STEPS = [
-  ['Sampling plan', 'Soil survey plan and sampling protocol for the whole perimeter.'],
-  ['Satellite data', 'Extraction and processing of satellite imagery and spectral indices, to read the land before going out.'],
-  ['Stratification', 'Multicriteria GIS stratification of those indices: homogeneous survey units and the placement of every survey point.'],
-  ['Fieldwork', 'Organisation and supervision of the field campaigns: auger surveys and soil pits, with a description sheet for every horizon.'],
-  ['Classification', 'Classification and characterisation of each soil from the field descriptions.'],
-  ['Laboratory', 'Coordination of the physico-chemical and hydrodynamic analyses; analysis and interpretation of the results for crop suitability, irrigation suitability and salinity, drainage and fertility constraints.'],
-  ['Spatialisation', 'GIS mapping of every result: survey points and pits, textural depth, soil types, irrigation suitability, crop suitability and crop orientation.'],
-  ['Recommendations', 'Suited crops, amendments, fertilisation, drainage, leaching and irrigation systems, with a soil fertility zoning and fertilisation programmes for rice, vegetables and fodder.'],
-  ['Soil study and thematic atlas', 'Pedological study and thematic atlas of the perimeter, bringing every profile, analysis and map together: one reference document for the engineers designing the irrigation.'],
-  ['Environmental assessment', 'Environmental and social impact assessment component and its methodology, alongside the soil study’s.'],
-  ['Feasibility and delivery', 'Coordination with the hydraulic, survey, geotechnical and agro-economic experts on feasibility and development options; analytical annexes and final client deliverables.'],
-];
-
-const PROJECTS = [
-  {
-    id: 'mvd',
-    photo: 'marrakech-palm-grove',
-    alt: 'Date palms and shrubs in a palm grove on the edge of Marrakech',
-    title: 'Biodiversity and climate vulnerability of Marrakech',
-    place: 'Marrakech',
-    regions: ['marrakech'],
-    tags: ['Biodiversity', 'Ecosystem services', 'Climate'],
-    blocks: [
-      ['Method', 'Mission 1 methodology: flora and fauna sampling methods, and survey sites chosen by guided randomisation to cover every habitat of the city.'],
-      ['Field mission', 'Field team supervision, with set daily routes to keep the surveys on time and on budget.'],
-      ['Ecosystem services', 'Ecosystem-services modelling of the field data; thematic maps gathered in an atlas with its organised geodatabase.'],
-      ['Climate', 'Mission 2: analysis of historical climate records, projections under future scenarios with Python (GeoPandas and Rasterio libraries), ArcGIS and QGIS, and a vulnerability score for each district and for the region as a whole.'],
-    ],
-    outputs: ['Survey methodology', 'Field mission plan', 'Ecosystem-services report', 'Thematic atlas', 'Climate projections', 'District vulnerability maps'],
-  },
-  {
-    id: 'green',
-    photo: 'marrakech-garden',
-    alt: 'A dense urban garden of palms, shrubs and lawn in Marrakech',
-    title: 'Urban green-space mapping and categorisation',
-    place: 'Marrakech',
-    regions: ['marrakech'],
-    tags: ['GIS', 'Urban planning', 'Data'],
-    blocks: [
-      ['Field data', 'Synthesis and analysis of the field-mission records for the Mission 1 deliverables.'],
-      ['Indicators', 'Key indicators to track how each green space changes over time.'],
-      ['Atlas', 'Atlas of every green space and the street furniture it holds.'],
-      ['Citywide plan', 'Mission 2: citywide categorisation and mapping of green spaces with local stakeholders, matched to the needs of urban planning; strategies to strengthen green infrastructure.'],
-      ['Geodatabase', 'Management and cleaning of the spatial geodatabase, kept accurate and usable.'],
-    ],
-    outputs: ['Monitoring indicators', 'Green-space atlas', 'Citywide categorisation', 'Thematic maps', 'Clean geodatabase'],
-  },
-  {
-    id: 'padermo',
-    photo: 'rif-hills',
-    alt: 'Terraced hillsides and scattered villages in mountains in northern Morocco',
-    title: 'PADERMO, rural development in the eastern mountains',
-    place: 'Oriental region',
-    regions: ['oriental'],
-    tags: ['Safeguards', 'Climate adaptation', 'Capacity building'],
-    blocks: [
-      ['Integration', 'Environmental and climate considerations built into every intervention of the programme: climate-resilience measures and natural-resource data from the baseline studies.'],
-      ['Technical advice', 'Technical advice on sustainable agricultural production and climate adaptation; review of the climate studies, maps and documents produced by the programme.'],
-      ['Training', 'Training of project staff and stakeholders in climate-resilient farming; awareness-raising for beneficiaries on climate resilience and environmental risk.'],
-      ['Compliance', 'Coordination with regional and provincial agencies for compliance with national environmental and social policy and IFAD standards.'],
-      ['Safeguard plans', 'IFAD SECAP procedures (certified): the Environmental, Social and Climate Management Plan, environmental and climate risk plans, required environmental documents and monitoring of environmental indicators.'],
-    ],
-    outputs: ['Technical reviews', 'Training sessions', 'Risk management plans', 'ESCMP', 'Indicator monitoring'],
-  },
-  {
-    id: 'housing',
-    photo: 'draa-oasis-town',
-    alt: 'A town at the edge of a palm oasis below a bare hill',
-    title: 'Regional housing plans for three regions',
-    place: 'Casablanca-Settat · Béni Mellal-Khénifra · Guelmim-Oued Noun',
-    regions: ['casablanca', 'beni-mellal', 'guelmim'],
-    tags: ['Territory', 'GIS', 'Surveys'],
-    blocks: [
-      ['Phase I framework', 'Phase I methodology report: the reference framework for the three regional studies.'],
-      ['Territorial analysis', 'Analysis of demographic, socio-economic, environmental, urban and land dynamics from the 2024 national census, planning documents, sector statistics and regional studies.'],
-      ['Methods', 'Methods for the housing-stock diagnosis, the estimate of needs and deficit, the housing-demand survey and the census of available land.'],
-      ['Stakeholders', 'Stakeholder mapping with a GIZ-inspired approach: identification, classification and ranking by influence, interest in the plan, capacity to share data and risk of blocking.'],
-      ['Survey tools', 'Institutional interview guides; questionnaires for households, developers, banks and estate agencies; territorial and land census sheets.'],
-      ['GIS and land', 'Geodatabase design, with layers and overlays of supply, demand, facilities, constraints and available land; land screening by legal status, planning fit, access, servicing, cost and environmental constraints, for a 2030 to 2035 horizon.'],
-    ],
-    outputs: ['Methodology report', 'Stakeholder map', 'Survey instruments', 'GIS data model', 'Land-screening method'],
-  },
-  {
-    id: 'cesar',
-    photo: 'draa-river',
-    alt: 'A wide riverbed with a thin channel of water between palm groves',
-    title: 'CESAR II, jobs in the water and sanitation sector',
-    place: 'Morocco',
-    regions: [],
-    national: true,
-    tags: ['Water', 'Sanitation', 'Research'],
-    blocks: [
-      ['Research', 'In-depth research and comparative sector studies on the business ecosystem and its key success factors.'],
-      ['Workshops', 'Questionnaires for the stakeholder workshops, to collect the data the study needed.'],
-      ['Analysis', 'Final analysis and data synthesis behind the recommendations on job opportunities, the value chain and the development of the sector’s ecosystem.'],
-    ],
-    outputs: ['Sector benchmarks', 'Workshop questionnaires', 'Value-chain analysis', 'Recommendations'],
-  },
-  {
-    id: 'land',
-    photo: 'atlas-terraces',
-    alt: 'Green terraced fields on a valley slope in the High Atlas',
-    title: 'Forests, coastline and watershed planning',
-    place: 'Rabat · Laâyoune-Sakia El Hamra · Guelmim-Oued Noun · Zat',
-    regions: ['rabat', 'marrakech', 'guelmim', 'laayoune'],
-    tags: ['Forests', 'Coast', 'Watershed'],
-    blocks: [
-      ['Forests', 'Management support, statistical processing and spatial analysis for the plans of the Aïn Abelioun and Aït Hatem forests and Rabat’s green belt.'],
-      ['Coastline', 'For the regional coastal schemes of Laâyoune-Sakia El Hamra and Guelmim-Oued Noun: project management, review and correction of deliverables, data analysis, mapping and spatial analysis.'],
-      ['Watershed', 'Project management support and coordination of activities for the Zat watershed plan.'],
-    ],
-    outputs: ['Forest statistics', 'Coastal maps', 'Deliverable reviews', 'Coordination'],
-  },
-];
-
-const METHOD = [
-  { step: 'Design', text: 'A sampling plan from multicriteria GIS stratification: homogeneous survey units, then the points to dig.', tools: 'ArcGIS · QGIS · Earth Engine' },
-  { step: 'Survey', text: 'Field campaigns organised and supervised; each horizon described, sampled and classified in the pit.', tools: 'Field protocols · KoboToolbox' },
-  { step: 'Analyse', text: 'Laboratory results and spatial data read together, in one clean geodatabase.', tools: 'Python · R · SQL' },
-  { step: 'Decide', text: 'Suitability maps, constraints and written recommendations that engineers and planners can act on.', tools: 'Atlases · Tableau · Reports' },
-];
-
-const TOOL_GROUPS = [
-  {
-    name: 'Mapping and remote sensing',
-    tools: [
-      { name: 'ArcGIS', logo: 'arcgis', use: 'Soil, suitability and thematic maps; atlases' },
-      { name: 'QGIS', logo: 'qgis', use: 'Spatial analysis and map production' },
-      { name: 'Google Earth Engine', logo: 'googleearthengine', use: 'Satellite imagery and spectral indices' },
-    ],
-  },
-  {
-    name: 'Analysis and code',
-    tools: [
-      { name: 'Python', logo: 'python', use: 'Climate projections and spatial data processing' },
-      { name: 'R', logo: 'r', use: 'Statistics for soil and forest data' },
-      { name: 'SQL', logo: 'sql', use: 'Querying structured datasets' },
-      { name: 'Tableau', logo: 'tableau-icon', use: 'Dashboards and indicators' },
-    ],
-  },
-  {
-    name: 'Reporting and office',
-    tools: [
-      { name: 'Microsoft Word', logo: 'word', use: 'Study reports and technical deliverables' },
-      { name: 'Excel', logo: 'excel', use: 'Lab results and data tables' },
-      { name: 'Access', logo: 'access', use: 'Relational project databases' },
-      { name: 'PowerPoint', logo: 'powerpoint', use: 'Workshops and client presentations' },
-    ],
-  },
-  {
-    name: 'In the field',
-    field: true,
-    tools: [
-      { name: 'KoboToolbox', logo: 'kobotoolbox', use: 'Survey forms filled on a phone at every sampling point, synced to one dataset' },
-      { name: 'QField', logo: 'qfield', use: 'GIS layers carried into the field: navigate to survey points and record observations on the map' },
-    ],
-  },
-];
-
-const TRAINING = [
-  ['Saline treated wastewater', 'Designed and ran a field trial on how saline treated wastewater affects soil fertility, at a golf course in Agadir.'],
-  ['Nakhla watershed soil map', 'Characterised soils with a field team and produced the watershed’s soil map in ArcGIS.'],
-  ['Blueberry irrigation', 'Followed irrigation, fertilisation and crop-protection trials at a blueberry producer near Agadir.'],
-  ['Farm records', 'Recorded crops, inputs, pests and field practices on a farm near Meknès.'],
-];
-
-const CERTS = ['Google Data Analytics', 'Google Advanced Data Analytics', 'GIS Specialization', 'Google Project Management', 'Precision Agriculture', 'IFAD SECAP procedures'];
 
 /* --------------------------------------------------------------------------------------- sections */
 
-function Hero() {
+function Header() {
   return (
-    <header className="pf-hero" id="top">
-      <Topo preset="massif" readout />
-      <nav className="pf-nav" aria-label="Main">
-        <a className="pf-brand" href="#top"><Logo />Soil Logic</a>
-        <div className="pf-nav__links">
+    <header className="site-header pf-header">
+      <div className="wrap site-header__in">
+        <a className="brand" href="/"><Mark />Soil Logic</a>
+        <nav className="site-nav" aria-label="Main">
+          <a href="#work">Work</a>
           <a href="#brakna">Case study</a>
-          <a href="#projects">Projects</a>
           <a href="#method">Method</a>
           <a href="#toolkit">Toolkit</a>
           <a href="#training">Training</a>
+        </nav>
+        <div className="site-actions">
+          <a className="pf-header__tool" href="/">Texture calculator</a>
+          <a className="btn btn--small" href={EMAIL}>Email Ayoub</a>
         </div>
-        <a className="pf-btn pf-btn--light pf-nav__cta" href={EMAIL}>Email Ayoub</a>
-      </nav>
+      </div>
+    </header>
+  );
+}
 
-      <div className="pf-hero__grid">
+function Hero() {
+  return (
+    <section className="pf-hero" id="top">
+      <div className="wrap pf-hero__grid">
         <div className="pf-hero__copy">
-          <p className="pf-hero__who pf-in" style={{ '--d': '0ms' }}>Ayoub · State Engineer in Agronomy · Soil, water and environment</p>
-          <Title as="h1" text="I read the land before the project is drawn." />
-          <p className="pf-hero__lead pf-in" style={{ '--d': '420ms' }}>
+          <p className="eyebrow pf-in" style={{ '--d': '0ms' }}>Ayoub · State Engineer in Agronomy</p>
+          <Title as="h1" className="display" text="I read the land before the project" em="is drawn." />
+          <p className="lead pf-in" style={{ '--d': '480ms' }}>
             Soil, water and environmental studies: land and irrigation suitability, GIS and remote sensing,
             climate vulnerability and environmental safeguards, for projects in Morocco and Mauritania.
           </p>
-          <div className="pf-hero__actions pf-in" style={{ '--d': '520ms' }}>
-            <a className="pf-btn pf-btn--sand" href={EMAIL}>Email Ayoub<Arrow /></a>
-            <a className="pf-btn pf-btn--ghost" href={DECK} download="Ayoub-Professional-Pitch-Deck.pdf">Download the pitch deck<span className="sr-only"> (PDF)</span></a>
+          <div className="pf-hero__actions pf-in" style={{ '--d': '580ms' }}>
+            <a className="btn btn--clay" href={EMAIL}>Email Ayoub<Arrow /></a>
+            <a className="btn btn--ghost" href={DECK} download="Ayoub-Professional-Pitch-Deck.pdf">Download the pitch deck<span className="sr-only"> (PDF)</span></a>
           </div>
         </div>
 
-        <figure className="pf-core" aria-hidden="true">
-          <div className="pf-core__photo" data-liquid="">
-            <Img name="hero-soil-red" wide={960} eager alt="" sizes="(max-width: 760px) 80vw, 440px" />
-            {[18, 41, 63, 84].map((top, i) => (
-              <span className="pf-core__line" key={top} style={{ '--top': `${top}%`, '--d': `${[520, 660, 770, 850][i]}ms` }} />
+        <figure className="pf-plate" aria-hidden="true">
+          <img
+            src="/portfolio/assets/soil-water-640.webp"
+            srcSet="/portfolio/assets/soil-water-640.webp 640w, /portfolio/assets/soil-water-1200.webp 1200w"
+            sizes="(max-width: 900px) 100vw, 56vw"
+            alt=""
+            width="1200"
+            height="1200"
+            decoding="async"
+            fetchPriority="high"
+          />
+          <ul className="pf-notes">
+            {NOTES.map((note, i) => (
+              <li key={note.label} data-side={note.x > 55 ? 'l' : 'r'} style={{ '--x': note.x, '--y': note.y, '--i': i }}>
+                <i /><span>{note.label}</span>
+              </li>
             ))}
-          </div>
-          <div className="pf-core__ruler">
-            {[0, 25, 50, 75, 100].map((cm, i) => (
-              <span key={cm} style={{ '--top': `${cm}%`, '--d': `${480 + i * 70}ms` }}>{cm} cm</span>
-            ))}
-          </div>
+          </ul>
         </figure>
       </div>
 
-      <dl className="pf-facts">
+      <dl className="wrap pf-facts">
         {FACTS.map(([value, label], i) => (
           <div key={value} className="pf-in" style={{ '--d': `${760 + i * 90}ms` }}>
             <dt><Count value={value} delay={820 + i * 90} /></dt><dd>{label}</dd>
           </div>
         ))}
       </dl>
-    </header>
+    </section>
   );
 }
 
 function Fields() {
   return (
     <section className="pf-section pf-fields" aria-labelledby="fields-h">
-      <div className="pf-wrap">
-        <div className="pf-head" data-rv="head">
-          <Title id="fields-h" text="Three fields, one question:" em="what can this land carry?" />
-          <p data-rise="" style={{ '--i': 4 }}>Each study moves from the pit to the map to a recommendation someone can build on.</p>
+      <div className="wrap">
+        <div className="pf-head" data-rv="">
+          <p className="eyebrow">Four fields</p>
+          <h2 className="display" id="fields-h">Four fields, one question: <em>what can this land carry?</em></h2>
+          <p className="lead">Each study moves from the pit to the map to a recommendation someone can build on.</p>
         </div>
         <div className="pf-fields__grid">
-          {FIELDS.map((field, i) => (
-            <article key={field.no} className="pf-field" data-rv="field" style={{ '--i': i }}>
-              <span className="pf-field__no">{field.no}</span>
+          {FIELDS.map(field => (
+            <article key={field.key} className="pf-field" data-f={field.key} data-rv="">
+              <div className="pf-field__top"><span className="mono">{field.no}</span><span className="pf-field__chip mono">{field.short}</span></div>
               <h3>{field.title}</h3>
-              <ul>{field.lines.map((line, j) => <li key={line} style={{ '--j': j }}>{line}</li>)}</ul>
+              <ul>{field.lines.map(line => <li key={line}>{line}</li>)}</ul>
             </article>
           ))}
         </div>
@@ -524,59 +237,122 @@ function Fields() {
   );
 }
 
-function Brakna() {
-  return (
-    <section className="pf-section pf-case" id="brakna" aria-labelledby="brakna-h">
-      <div className="pf-wrap pf-case__grid">
-        <div className="pf-case__intro" data-rv="head">
-          <p className="pf-kicker" data-rise=""><span>Case study</span>Brakna, Mauritania</p>
-          <Title id="brakna-h" text="3,000 hectares, read profile by profile before a single canal was designed." />
-          <p data-rise="" style={{ '--i': 4 }}>
-            A hydro-agricultural development study for an irrigated perimeter in the communes of Dar El Barka
-            and Ould Birom, for SONADER and Mauritania’s Ministry of Agriculture and Food Sovereignty.
-          </p>
-          <dl className="pf-case__meta" data-rise="" style={{ '--i': 5 }}>
-            <div><dt>Scope</dt><dd>Soil study; methodology of the environmental and social impact assessment</dd></div>
-            <div><dt>Worked with</dt><dd>Hydraulic engineers, surveyors, geotechnicians and agro-economists</dd></div>
-          </dl>
-        </div>
+/* The mixture diagram: every study placed by its share of soil science and agronomy, data science and
+   GIS, and environment work. It is read
+   like the texture triangle on the homepage, one line to each side. */
+const TRI = { soil: [70, 500], data: [570, 500], land: [320, 67] };
+const at = ([s, d, l]) => [
+  (s * TRI.soil[0] + d * TRI.data[0] + l * TRI.land[0]) / 100,
+  (s * TRI.soil[1] + d * TRI.data[1] + l * TRI.land[1]) / 100,
+];
+const OUTLINE = `M${TRI.soil.join(' ')}L${TRI.data.join(' ')}L${TRI.land.join(' ')}Z`;
+const GRID = [25, 50, 75].flatMap(v => [
+  [at([v, 100 - v, 0]), at([v, 0, 100 - v])],
+  [at([100 - v, v, 0]), at([0, v, 100 - v])],
+  [at([100 - v, 0, v]), at([0, 100 - v, v])],
+]);
 
-        <div className="pf-case__log">
-          <div className="pf-case__photo" data-rv="clip" data-liquid="">
-            <Img name="irrigation-canal" alt="A lined irrigation canal between bare earth banks, with a small footbridge" />
-          </div>
-        </div>
-      </div>
-      <div className="pf-wrap pf-steps">
-        <div className="pf-steps__head" data-rv="head">
-          <Title as="h3" text="My part, step by step" />
-          <p data-rise="" style={{ '--i': 3 }}>From the first satellite image to the client’s report, one engineer carried the soil study through.</p>
-        </div>
-        <ol className="pf-steps__list">
-          {BRAKNA_STEPS.map(([title, text], i) => (
-            <li key={title} data-rv="step" style={{ '--i': i % 2 }}>
-              <span className="pf-steps__no">{String(i + 1).padStart(2, '0')}</span>
-              <h4>{title}</h4>
-              <p>{text}</p>
-            </li>
+function Mixture({ projects, open, hover, onHover, onProject }) {
+  const lead = projects.find(p => p.id === hover) || projects.find(p => p.id === open) || null;
+  const p = lead ? at(lead.mix) : null;
+  const guides = lead ? [
+    ['land', at([100 - lead.mix[2], 0, lead.mix[2]]), -26, 4, lead.mix[2]],
+    ['data', at([0, lead.mix[1], 100 - lead.mix[1]]), 26, 4, lead.mix[1]],
+    ['soil', at([lead.mix[0], 100 - lead.mix[0], 0]), 0, 24, lead.mix[0]],
+  ] : [];
+  return (
+    <div className="pf-plot" data-busy={lead ? '' : undefined}>
+      <svg className="pf-plot__svg" viewBox="0 0 640 580" role="group" aria-label="Mixture diagram. Each point is a study, placed by its share of soil science and agronomy, data science and GIS, and environment work.">
+        <defs>
+          {[['soil', 'var(--sand)'], ['data', 'var(--silt)'], ['land', 'var(--clay-bright)']].map(([key, colour]) => (
+            <radialGradient key={key} id={`pf-g-${key}`} gradientUnits="userSpaceOnUse" cx={TRI[key][0]} cy={TRI[key][1]} r="470">
+              <stop offset="0" stopColor={colour} stopOpacity="0.62" />
+              <stop offset="1" stopColor={colour} stopOpacity="0" />
+            </radialGradient>
           ))}
-        </ol>
+        </defs>
+        <g aria-hidden="true">
+          <path className="pf-plot__ground" d={OUTLINE} />
+          {['soil', 'data', 'land'].map(key => <path key={key} d={OUTLINE} fill={`url(#pf-g-${key})`} />)}
+          {GRID.map(([a, b], i) => <line key={i} className="pf-plot__grid" x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />)}
+          <path className="pf-plot__edge" d={OUTLINE} />
+          <text className="pf-plot__axis" data-f="land" x={TRI.land[0]} y={TRI.land[1] - 22} textAnchor="middle">{MIX_AXES[2].label}</text>
+          <text className="pf-plot__axis" data-f="soil" x={TRI.soil[0] - 30} y={TRI.soil[1] + 40}>{MIX_AXES[0].label}</text>
+          <text className="pf-plot__axis" data-f="data" x={TRI.data[0] + 30} y={TRI.data[1] + 40} textAnchor="end">{MIX_AXES[1].label}</text>
+          {p ? guides.map(([key, edge, dx, dy, value]) => (
+            <g key={key} className="pf-plot__guide" data-f={key}>
+              <line x1={p[0]} y1={p[1]} x2={edge[0]} y2={edge[1]} />
+              <g transform={`translate(${edge[0] + dx} ${edge[1] + dy})`}>
+                <rect x="-17" y="-13" width="34" height="20" rx="10" />
+                <text textAnchor="middle" y="1.5">{value}</text>
+              </g>
+            </g>
+          )) : null}
+        </g>
+        {projects.map((project, i) => {
+          const [x, y] = at(project.mix);
+          const on = lead && lead.id === project.id;
+          return (
+            <g
+              key={project.id}
+              className="pf-plot__pt"
+              transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}
+              style={{ '--i': i }}
+              data-on={on ? '' : undefined}
+              data-open={open === project.id ? '' : undefined}
+              role="button"
+              tabIndex={0}
+              aria-label={`${project.title}. ${MIX_AXES.map((axis, a) => `${axis.label} ${project.mix[a]}%`).join(', ')}.`}
+              aria-pressed={open === project.id}
+              onClick={() => onProject(project.id)}
+              onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onProject(project.id); } }}
+              onPointerEnter={() => onHover(project.id)}
+              onPointerLeave={() => onHover(null)}
+              onFocus={() => onHover(project.id)}
+              onBlur={() => onHover(null)}
+            >
+              <circle className="pf-plot__hit" r="24" />
+              <circle className="pf-plot__ring" r="17" />
+              <circle className="pf-plot__dot" r="14" />
+              <text textAnchor="middle" y="4">{pad(i + 1)}</text>
+            </g>
+          );
+        })}
+      </svg>
+      <div className="pf-plot__card" aria-live="polite">
+        {lead ? (
+          <div className="pf-plot__cardin" key={lead.id}>
+            <p className="pf-plot__eyebrow mono">Study {pad(projects.indexOf(lead) + 1)} · {lead.place}</p>
+            <h3>{lead.title}</h3>
+            <dl className="pf-plot__mix">
+              {MIX_AXES.map((axis, i) => (
+                <div key={axis.key} data-f={axis.key}><dt>{axis.short}</dt><dd>{lead.mix[i]}<small>%</small></dd></div>
+              ))}
+            </dl>
+          </div>
+        ) : (
+          <div className="pf-plot__cardin" key="rest">
+            <p className="pf-plot__eyebrow mono">{projects.length} studies · 3 axes</p>
+            <p className="pf-plot__hint">Every study is a mixture. Each point is placed by how much of the work was soil science and agronomy, data science and GIS, and environment: pick one to open it.</p>
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 }
 
-function Projects() {
+function Work() {
+  const [lens, setLens] = useState('mix');
   const [open, setOpen] = useState(null);
   const [hover, setHover] = useState(null);
   const [region, setRegion] = useState(null);
-  // a row's photograph starts loading as soon as the row is touched, so it is there when the row opens
+  // a row's picture starts loading as soon as the row is touched, so it is there when the row opens
   const [warm, setWarm] = useState(() => new Set());
   const arm = id => setWarm(set => (set.has(id) ? set : new Set(set).add(id)));
   const timer = useRef(0);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  // a study chosen on the map: open its row and bring it into view once the other rows have closed
+  // a study chosen on the diagram or the map: open its row and bring it into view once the others have closed
   const show = id => {
     setOpen(id);
     arm(id);
@@ -584,7 +360,7 @@ function Projects() {
     timer.current = setTimeout(() => {
       const row = document.getElementById(`project-${id}`);
       if (row) row.scrollIntoView({ block: window.matchMedia('(min-width: 1081px)').matches ? 'nearest' : 'start' });
-    }, 400);
+    }, 420);
   };
   // a region chosen on the map: list its studies, or open the study straight away when there is only one
   const pickRegion = id => {
@@ -599,53 +375,146 @@ function Projects() {
     setOpen(closing ? null : p.id);
     if (!closing && region && !p.regions.includes(region)) setRegion(null);
   };
+  const pickLens = next => { setLens(next); setRegion(null); };
 
   return (
-    <section className="pf-section pf-projects" id="projects" aria-labelledby="projects-h">
-      <div className="pf-wrap">
-        <div className="pf-head pf-head--row" data-rv="head">
-          <Title id="projects-h" text="Selected projects" />
-          <p data-rise="" style={{ '--i': 2 }}>Studies for public agencies, international cooperation and development programmes across Morocco. Pick a region on the map or open a row to see what was done.</p>
+    <section className="pf-section pf-work" id="work" aria-labelledby="work-h">
+      <div className="wrap">
+        <div className="pf-head pf-head--row" data-rv="">
+          <div>
+            <p className="eyebrow">Selected work</p>
+            <h2 className="display" id="work-h">Every study is <em>a mixture.</em></h2>
+          </div>
+          <p className="lead">Studies for public agencies, international cooperation and development programmes. Read them by field or by region, or open a row to see what was done.</p>
         </div>
         <div className="pf-atlas">
-          <MissionMap projects={PROJECTS} open={open} hover={hover} region={region} onRegion={pickRegion} onProject={show} onReset={() => { setOpen(null); setRegion(null); }} />
-          <div className="pf-index-wrap" onMouseLeave={() => setHover(null)}>
-            <ol className="pf-index">
-              {PROJECTS.map((p, i) => {
-                const isOpen = open === p.id;
-                return (
-                  <li key={p.id} id={`project-${p.id}`} className={isOpen ? 'pf-row is-open' : 'pf-row'} data-rv="row" onMouseEnter={() => { setHover(p.id); arm(p.id); }} onTouchStart={() => arm(p.id)} onFocus={() => { setHover(p.id); arm(p.id); }} onBlur={() => setHover(null)}>
-                    <h3>
-                      <button type="button" className="pf-row__head" aria-expanded={isOpen} aria-controls={`row-${p.id}`} onClick={() => toggle(p)}>
-                        <span className="pf-row__no">{String(i + 1).padStart(2, '0')}</span>
-                        <span className="pf-row__title">{p.title}</span>
-                        <span className="pf-row__place">{p.place}</span>
-                        <span className="pf-row__toggle" aria-hidden="true" />
-                      </button>
-                    </h3>
-                    {/* always in the DOM so it can open and close smoothly; hidden from everyone while closed */}
-                    <div className="pf-row__panel" id={`row-${p.id}`}>
-                      <div className="pf-row__clip">
-                        <div className="pf-row__body">
-                          <div className="pf-row__photo" data-liquid=""><Img name={p.photo} alt={p.alt} sizes="(max-width: 760px) 100vw, 560px" eager={isOpen || warm.has(p.id)} /></div>
-                          <div className="pf-row__text">
-                            <ul className="pf-row__tags" style={{ '--i': 0 }}>{p.tags.map(t => <li key={t}>{t}</li>)}</ul>
-                            {p.blocks.map(([label, text], b) => (
-                              <div key={label} className="pf-row__block" style={{ '--i': b + 1 }}><h4>{label}</h4><p>{text}</p></div>
-                            ))}
-                            <div className="pf-row__outputs" style={{ '--i': p.blocks.length + 1 }}>
-                              <h4>Delivered</h4>
-                              <ul>{p.outputs.map((o, j) => <li key={o} style={{ '--j': j }}>{o}</li>)}</ul>
-                            </div>
+          <div className="pf-lensbox" data-rv="">
+            <div className="pf-lens" role="group" aria-label="Read the studies">
+              <button type="button" aria-pressed={lens === 'mix'} onClick={() => pickLens('mix')}>By field</button>
+              <button type="button" aria-pressed={lens === 'map'} onClick={() => pickLens('map')}>By region</button>
+            </div>
+            {lens === 'mix'
+              ? <Mixture projects={PROJECTS} open={open} hover={hover} onHover={setHover} onProject={show} />
+              : <MissionMap projects={PROJECTS} open={open} hover={hover} region={region} onRegion={pickRegion} onProject={show} onReset={() => { setOpen(null); setRegion(null); }} />}
+          </div>
+          <ol className="pf-index" onMouseLeave={() => setHover(null)}>
+            {PROJECTS.map((p, i) => {
+              const isOpen = open === p.id;
+              return (
+                <li key={p.id} id={`project-${p.id}`} className="pf-row" data-open={isOpen ? '' : undefined} data-lit={hover === p.id ? '' : undefined} onMouseEnter={() => { setHover(p.id); arm(p.id); }} onTouchStart={() => arm(p.id)} onFocus={() => { setHover(p.id); arm(p.id); }} onBlur={() => setHover(null)}>
+                  <h3>
+                    <button type="button" className="pf-row__head" aria-expanded={isOpen} aria-controls={`row-${p.id}`} onClick={() => toggle(p)}>
+                      <span className="pf-row__no mono">{pad(i + 1)}</span>
+                      <span className="pf-row__title">{p.title}</span>
+                      <span className="pf-row__place">{p.place}</span>
+                      <MixBar mix={p.mix} />
+                      <span className="pf-row__toggle" aria-hidden="true" />
+                    </button>
+                  </h3>
+                  {/* always in the DOM so it can open and close smoothly; hidden from everyone while closed */}
+                  <div className="pf-row__panel" id={`row-${p.id}`}>
+                    <div className="pf-row__clip">
+                      <div className="pf-row__body">
+                        <div className="pf-row__photo" data-art={p.art ? '' : undefined}>
+                          {p.art
+                            ? <img src={p.art} alt={p.alt} loading={isOpen || warm.has(p.id) ? undefined : 'lazy'} decoding="async" />
+                            : <Img name={p.photo} alt={p.alt} sizes="(max-width: 760px) 100vw, 560px" eager={isOpen || warm.has(p.id)} />}
+                        </div>
+                        <div className="pf-row__text">
+                          <ul className="pf-row__tags">{p.tags.map(t => <li key={t}>{t}</li>)}</ul>
+                          {p.blocks.map(([label, text]) => (
+                            <div key={label} className="pf-row__block"><h4>{label}</h4><p>{text}</p></div>
+                          ))}
+                          <div className="pf-row__outputs">
+                            <h4>Delivered</h4>
+                            <ul>{p.outputs.map(o => <li key={o}>{o}</li>)}</ul>
                           </div>
+                          {p.more ? <a className="link pf-row__more" href={p.more.href}>{p.more.label}<Arrow down /></a> : null}
                         </div>
                       </div>
                     </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// The flagship study as a soil log: five phases down the page, with a profile beside them that marks
+// the phase being read.
+function Brakna() {
+  const [phase, setPhase] = useState(0);
+  const list = useRef(null);
+  useEffect(() => {
+    const root = list.current;
+    if (!root || !('IntersectionObserver' in window)) return undefined;
+    const groups = [...root.querySelectorAll('[data-phase]')];
+    const io = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) setPhase(Number(entry.target.getAttribute('data-phase')));
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    groups.forEach(group => io.observe(group));
+    return () => io.disconnect();
+  }, []);
+  let n = 0;
+  const ranges = BRAKNA_PHASES.map(group => { const from = n + 1; n += group.steps.length; return [from, n]; });
+  n = 0;
+  return (
+    <section className="pf-section pf-case" id="brakna" aria-labelledby="brakna-h">
+      <div className="wrap pf-case__top">
+        <div className="pf-case__intro" data-rv="">
+          <p className="eyebrow">Case study · Brakna, Mauritania</p>
+          <h2 className="display" id="brakna-h">3,000 hectares, read profile by profile <em>before a single canal was designed.</em></h2>
+          <p className="lead">
+            A hydro-agricultural development study for an irrigated perimeter in the communes of Dar El Barka
+            and Ould Birom, for SONADER and Mauritania’s Ministry of Agriculture and Food Sovereignty.
+          </p>
+          <dl className="pf-case__meta">
+            <div><dt className="mono">Scope</dt><dd>Soil study; methodology of the environmental and social impact assessment</dd></div>
+            <div><dt className="mono">Worked with</dt><dd>Hydraulic engineers, surveyors, geotechnicians and agro-economists</dd></div>
+          </dl>
+        </div>
+        <div className="pf-case__photo" data-rv="clip">
+          <Img name="irrigation-canal" alt="A lined irrigation canal between bare earth banks, with a small footbridge" />
+        </div>
+      </div>
+
+      <div className="wrap pf-log">
+        <div className="pf-log__side">
+          <h3 className="display">My part, step by step</h3>
+          <p>From the first satellite image to the client’s report, one engineer carried the soil study through.</p>
+          <ol className="pf-profile" aria-label="Phases of the study">
+            {BRAKNA_PHASES.map((group, i) => (
+              <li key={group.name} style={{ '--n': group.steps.length, '--i': i }} data-on={phase === i ? '' : undefined}>
+                <a href={`#phase-${i + 1}`}>
+                  <span>{group.name}</span>
+                  <span className="mono">{ranges[i][0] === ranges[i][1] ? pad(ranges[i][0]) : `${pad(ranges[i][0])}–${pad(ranges[i][1])}`}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="pf-log__list" ref={list}>
+          {BRAKNA_PHASES.map((group, i) => (
+            <section key={group.name} className="pf-phase" id={`phase-${i + 1}`} data-phase={i} aria-label={group.name}>
+              <p className="pf-phase__name mono"><span>Phase {i + 1}</span>{group.name}</p>
+              <ol>
+                {group.steps.map(([title, text]) => {
+                  n += 1;
+                  return (
+                    <li key={title} data-rv="">
+                      <span className="pf-phase__no mono">{pad(n)}</span>
+                      <h4>{title}</h4>
+                      <p>{text}</p>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          ))}
         </div>
       </div>
     </section>
@@ -653,38 +522,32 @@ function Projects() {
 }
 
 function Method() {
-  const [ref, seen] = useSeen();
+  const [active, setActive] = useState(0);
   return (
     <section className="pf-section pf-method" id="method" aria-labelledby="method-h">
-      <Topo preset="terraces" alpha={0.1} indexAlpha={0.22} />
-      <div className="pf-wrap">
-        <div className="pf-head" data-rv="head">
-          <Title id="method-h" text="One method, from field data to sound decisions" />
-          <p data-rise="" style={{ '--i': 4 }}>The same four steps run through every study, whatever its scale.</p>
+      <div className="wrap">
+        <div className="pf-head pf-head--row" data-rv="">
+          <div>
+            <p className="eyebrow">Method</p>
+            <h2 className="display" id="method-h">One method, from field data <em>to sound decisions.</em></h2>
+          </div>
+          <p className="lead">The same four steps run through every study, whatever its scale.</p>
         </div>
-        <ol className={seen ? 'pf-flow is-seen' : 'pf-flow'} ref={ref}>
+        <ol className="pf-panels" data-rv="clip">
           {METHOD.map((m, i) => (
-            <li key={m.step} style={{ '--i': i }}>
-              <span className="pf-flow__dot" aria-hidden="true" />
-              <span className="pf-flow__no">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{m.step}</h3>
-              <p>{m.text}</p>
-              <p className="pf-flow__tools">{m.tools}</p>
+            <li key={m.step} data-on={active === i ? '' : undefined} onPointerEnter={event => { if (event.pointerType === 'mouse') setActive(i); }} onClick={() => setActive(i)} onFocus={() => setActive(i)} tabIndex={0}>
+              <Img name={m.photo} wide={m.wide} alt={m.alt} sizes="(max-width: 860px) 100vw, 50vw" />
+              <div className="pf-panels__text">
+                <span className="mono">{pad(i + 1)}</span>
+                <h3>{m.step}</h3>
+                <div className="pf-panels__more">
+                  <p>{m.text}</p>
+                  <p className="mono">{m.tools}</p>
+                </div>
+              </div>
             </li>
           ))}
         </ol>
-        <div className="pf-strip">
-          {[
-            ['soil-profile-tape', 960, 'A dark soil profile beside a measuring tape'],
-            ['hero-soil-pit', 1080, 'A soil pit wall with a measuring staff marking each horizon'],
-            ['irrigated-orchards', 1200, 'Irrigated orchards seen from above, divided into regular plots'],
-            ['oasis-crops', 960, 'Date palms above small irrigated plots in a desert oasis'],
-          ].map(([name, wide, alt], i) => (
-            <div className="pf-strip__cell" key={name} data-rv="clip" data-liquid="" style={{ '--i': i }}>
-              <Img name={name} wide={wide} alt={alt} sizes="(max-width: 760px) 50vw, 25vw" />
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -693,18 +556,21 @@ function Method() {
 function Toolkit() {
   return (
     <section className="pf-section pf-toolkit" id="toolkit" aria-labelledby="toolkit-h">
-      <div className="pf-wrap">
-        <div className="pf-head pf-head--row" data-rv="head">
-          <Title id="toolkit-h" text="The toolkit" />
-          <p data-rise="" style={{ '--i': 2 }}>The software behind the maps, the models and the field data, grouped by where it sits in a study.</p>
+      <div className="wrap">
+        <div className="pf-head pf-head--row" data-rv="">
+          <div>
+            <p className="eyebrow">Toolkit</p>
+            <h2 className="display" id="toolkit-h">The toolkit</h2>
+          </div>
+          <p className="lead">The software behind the maps, the models and the field data, grouped by where it sits in a study.</p>
         </div>
-        <div className="pf-toolkit__groups">
+        <div className="pf-tools">
           {TOOL_GROUPS.map(group => (
-            <div className={group.field ? 'pf-tgroup pf-tgroup--field' : 'pf-tgroup'} key={group.name} data-rv="tools">
-              <h3 className="pf-label">{group.name}</h3>
-              <ul className="pf-tgrid" style={{ '--n': group.tools.length }}>
-                {group.tools.map((tool, i) => (
-                  <li className="pf-tool" key={tool.name} style={{ '--i': i }}>
+            <div className="pf-tgroup" key={group.name}>
+              <h3 className="mono">{group.name}</h3>
+              <ul>
+                {group.tools.map(tool => (
+                  <li className="pf-tool" key={tool.name}>
                     <span className="pf-tool__logo"><img src={`/portfolio/tools/${tool.logo}.svg`} alt="" width="32" height="32" loading="lazy" /></span>
                     <span className="pf-tool__name">{tool.name}</span>
                     <span className="pf-tool__use">{tool.use}</span>
@@ -722,26 +588,24 @@ function Toolkit() {
 function Training() {
   return (
     <section className="pf-section pf-training" id="training" aria-labelledby="training-h">
-      <div className="pf-wrap">
-        <div className="pf-degree" data-rv="head">
-          <p className="pf-kicker" data-rise=""><span>Training</span>Institut Agronomique et Vétérinaire Hassan II, Rabat</p>
-          <Title id="training-h" text="State Engineer in Agronomy, natural resources and environment, specialised in soil and water management." />
+      <div className="wrap">
+        <div className="pf-degree" data-rv="">
+          <p className="eyebrow">Training · Institut Agronomique et Vétérinaire Hassan II, Rabat</p>
+          <h2 className="display" id="training-h">State Engineer in Agronomy, natural resources and environment, <em>specialised in soil and water management.</em></h2>
         </div>
         <div className="pf-training__grid">
           <div>
-            <h3 className="pf-label">Field training</h3>
-            <ul className="pf-list">
-              {TRAINING.map(([title, text]) => <li key={title} data-rv="rise"><strong>{title}</strong><span>{text}</span></li>)}
-            </ul>
+            <h3 className="mono">Field training</h3>
+            <ol className="pf-list">
+              {TRAINING.map(([title, text], i) => <li key={title}><span className="mono">{pad(i + 1)}</span><strong>{title}</strong><p>{text}</p></li>)}
+            </ol>
           </div>
           <div>
-            <h3 className="pf-label">Certifications</h3>
-            <ul className="pf-certs" data-rv="chips">{CERTS.map((c, j) => <li key={c} style={{ '--j': j }}>{c}</li>)}</ul>
-            <h3 className="pf-label">Languages</h3>
-            <dl className="pf-langs" data-rv="head">
-              {[['Arabic', 'Native'], ['Amazigh', 'Native'], ['English', 'Fluent'], ['French', 'Fluent']].map(([lang, level], i) => (
-                <div key={lang} data-rise="" style={{ '--i': i }}><dt>{lang}</dt><dd>{level}</dd></div>
-              ))}
+            <h3 className="mono">Certifications</h3>
+            <ul className="pf-certs">{CERTS.map(c => <li key={c}>{c}</li>)}</ul>
+            <h3 className="mono">Languages</h3>
+            <dl className="pf-langs">
+              {LANGUAGES.map(([lang, level]) => <div key={lang}><dt>{lang}</dt><dd className="mono">{level}</dd></div>)}
             </dl>
           </div>
         </div>
@@ -753,25 +617,33 @@ function Training() {
 function Contact() {
   return (
     <footer className="pf-contact" id="contact" aria-labelledby="contact-h">
-      <Topo preset="basin" readout />
-      <div className="pf-wrap" data-rv="head">
-        <Title id="contact-h" text="Send me the site, the question and the deadline." />
-        <p data-rise="" style={{ '--i': 5 }}>I reply with how I would approach the study, what it needs from the field and what it will deliver.</p>
-        <div className="pf-contact__actions" data-rise="" style={{ '--i': 6 }}>
-          <Magnet><a className="pf-btn pf-btn--sand pf-btn--big" href={EMAIL}>Email Ayoub<Arrow /></a></Magnet>
-          <a className="pf-contact__mail" href={EMAIL}>contact@soil-logic.com</a>
+      <div className="wrap">
+        <div className="pf-contact__in" data-rv="">
+          <p className="eyebrow">Start a study</p>
+          <h2 className="display" id="contact-h">Send me the site, the question <em>and the deadline.</em></h2>
+          <p className="lead">I reply with how I would approach the study, what it needs from the field and what it will deliver.</p>
+          <div className="pf-contact__actions">
+            <a className="btn btn--paper pf-btn--big" href={EMAIL}>Email Ayoub<Arrow /></a>
+            <a className="link" href={EMAIL}>{MAIL}</a>
+          </div>
+          <ol className="pf-brief">
+            {BRIEF.map(([title, text], i) => (
+              <li key={title}><span className="mono">{pad(i + 1)}</span><strong>{title}</strong><p>{text}</p></li>
+            ))}
+          </ol>
         </div>
         <div className="pf-foot">
-          <a className="pf-brand" href="#top"><Logo />Soil Logic</a>
+          <a className="brand" href="#top"><Mark />Soil Logic</a>
           <nav aria-label="Footer">
             <a href="/">Soil texture calculator</a>
             <a href="/articles">Soil guides</a>
             <a href={DECK} download="Ayoub-Professional-Pitch-Deck.pdf">Pitch deck (PDF)</a>
             <a href="/portfolio/credits.html">Photograph credits</a>
           </nav>
-          <span>&copy; 2026 Soil Logic</span>
+          <span className="mono">&copy; 2026 Soil Logic</span>
         </div>
       </div>
+      <div className="site-footer__word" aria-hidden="true">Soil Logic</div>
     </footer>
   );
 }
@@ -779,17 +651,16 @@ function Contact() {
 export default function Portfolio() {
   usePortfolioMetadata();
   const root = useRef(null);
-  useMotion(root);
-  useEffect(() => (root.current && !prefersReducedMotion() ? mountLiquid(root.current) : undefined), []);
+  useReveal(root);
   return (
     <div className="pf" ref={root}>
-      <a className="pf-skip" href="#fields-h">Skip to content</a>
-      <Depth />
-      <Hero />
+      <a className="skip-link" href="#fields-h">Skip to content</a>
+      <Header />
       <main>
+        <Hero />
         <Fields />
+        <Work />
         <Brakna />
-        <Projects />
         <Method />
         <Toolkit />
         <Training />

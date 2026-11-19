@@ -1,0 +1,179 @@
+/* The class cards: one USDA class drawn as its place in the triangle. Used by the calculator and the guides. */
+
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.class-card {
+  display: flex;
+}
+
+.class-card a {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.3s var(--ease-out), border-color 0.2s ease, box-shadow 0.3s ease, background-color 0.2s ease;
+}
+
+.class-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  color: var(--muted);
+}
+
+.glyph {
+  width: 92px;
+  height: auto;
+  overflow: visible;
+}
+
+.glyph__tri {
+  fill: var(--paper-2);
+}
+
+.glyph__area {
+  fill: var(--clay);
+  transition: fill 0.25s ease;
+}
+
+.glyph__edge {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 11;
+  stroke-linejoin: round;
+}
+
+.class-card h2,
+.class-card h3 {
+  margin-top: 14px;
+  font-family: var(--f-display);
+  font-size: 1.4rem;
+  font-weight: 620;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.class-card p {
+  margin-top: 8px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.class-range {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.66rem;
+}
+
+.class-card .class-range {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.class-range div {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.class-range dt {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+}
+
+.class-range dt::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sand);
+}
+
+.class-range div[data-f="silt"] dt::before {
+  background: var(--silt);
+}
+
+.class-range div[data-f="clay"] dt::before {
+  background: var(--clay);
+}
+
+.class-card__go {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.class-card__go .arrow {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.3s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .class-card a:hover {
+    transform: translateY(-3px);
+    border-color: var(--ink);
+    box-shadow: var(--shadow-2);
+  }
+
+  .class-card a:hover .class-card__go {
+    color: var(--clay);
+  }
+
+  .class-card a:hover .class-card__go .arrow {
+    transform: translateX(4px);
+  }
+}
+
+
+@media (max-width: 1180px) {
+  .class-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .class-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .class-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .glyph {
+    width: 76px;
+  }
+}
+
+.class-card__go small {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.class-card h2::first-letter,
+.class-card h3::first-letter {
+  text-transform: uppercase;
+}

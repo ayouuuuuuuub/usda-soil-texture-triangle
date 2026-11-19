@@ -1,14 +1,20 @@
 {
-  "name": "usda-soil-texture-triangle",
+  "name": "soil-logic",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build && node scripts/prerender-portfolio.mjs",
+    "build": "tsc --noEmit && vite build && node scripts/prerender.mjs",
+    "check": "node scripts/check.mjs",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource-variable/red-hat-display": "^5.3.0",
     "@vitejs/plugin-react": "^5.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

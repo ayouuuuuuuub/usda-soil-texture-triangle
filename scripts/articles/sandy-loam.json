@@ -1,0 +1,77 @@
+{
+  "source": "Sandy Loam Scientific Analysis.md",
+  "intro": {
+    "label": "Introduction",
+    "h2": "Where Sand Meets the Fine Fractions"
+  },
+  "sections": [
+    {
+      "label": "Taxonomic Boundaries",
+      "divider": "Classification"
+    },
+    {
+      "label": "Pedogenesis",
+      "divider": "Formation"
+    },
+    {
+      "label": "Surface Area",
+      "divider": "Structure"
+    },
+    {
+      "label": "Geomechanics",
+      "divider": "Engineering"
+    },
+    {
+      "label": "Thermal Regime",
+      "divider": "Heat"
+    },
+    {
+      "label": "Soil Hydraulics",
+      "divider": "Water"
+    },
+    {
+      "label": "Biogeochemistry",
+      "divider": "Chemistry"
+    },
+    {
+      "label": "Erosion Risk",
+      "divider": "Environment"
+    },
+    {
+      "label": "Synthesis",
+      "divider": "Management"
+    }
+  ],
+  "facts": [
+    [
+      "1.40–1.65",
+      "g/cm³ ideal bulk density"
+    ],
+    [
+      "13–20",
+      "cmol(+)/kg cation exchange capacity"
+    ],
+    [
+      "10–11%",
+      "Available water capacity"
+    ],
+    [
+      "15.4",
+      "cm/day K<sub>sat</sub> (Rosetta average)"
+    ]
+  ],
+  "fixes": [
+    [
+      "must equal or exceed 304.",
+      "must equal or exceed 30{cite:4}."
+    ],
+    [
+      "resulting in a PI of 0 to 446.",
+      "resulting in a PI of 0 to 4{cite:46}."
+    ]
+  ],
+  "footer": {
+    "title": "USDA Sandy Loam Soil Texture Class — Scientific Analysis",
+    "note": "Based on the USDA NRCS Soil Survey Manual, the Rosetta pedotransfer database, and peer-reviewed literature in pedology, soil physics, geotechnical engineering, and agronomy. Superscript numbers refer to the works cited below."
+  }
+}

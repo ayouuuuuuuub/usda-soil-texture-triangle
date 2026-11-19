@@ -1,0 +1,88 @@
+{
+  "source": "Loam Soil Scientific Research.md",
+  "intro": null,
+  "sections": [
+    {
+      "label": "Introduction",
+      "divider": null,
+      "h2": "A Balanced Equilibrium of Three Fractions"
+    },
+    {
+      "label": "Taxonomic Boundaries",
+      "divider": "Classification"
+    },
+    {
+      "label": "Soil Structure",
+      "divider": "Structure"
+    },
+    {
+      "label": "Soil Hydraulics",
+      "divider": "Water"
+    },
+    {
+      "label": "Pedotransfer Functions",
+      "divider": "Modeling"
+    },
+    {
+      "label": "Physical Quality",
+      "divider": "Indices"
+    },
+    {
+      "label": "Geomechanics",
+      "divider": "Engineering"
+    },
+    {
+      "label": "Gas and Heat",
+      "divider": "Aeration"
+    },
+    {
+      "label": "Carbon Cycling",
+      "divider": "Carbon"
+    },
+    {
+      "label": "Landscape Hydrology",
+      "divider": "Hydrology"
+    },
+    {
+      "label": "Soil Taxonomy",
+      "divider": "Taxonomy"
+    },
+    {
+      "label": "Conclusion",
+      "divider": "Synthesis",
+      "h2": "Loam as the Agronomic Benchmark"
+    }
+  ],
+  "facts": [
+    [
+      "40·40·20",
+      "Sand · silt · clay benchmark (%)"
+    ],
+    [
+      "1.10–1.40",
+      "g/cm³ bulk density (native)"
+    ],
+    [
+      "0.15–0.22",
+      "cm³/cm³ plant-available water"
+    ],
+    [
+      "3.8–7.6",
+      "mm/h infiltration (Group B)"
+    ]
+  ],
+  "fixes": [
+    [
+      "typically ranges from 1.4 to 1.614.",
+      "typically ranges from 1.4 to 1.6{cite:14}."
+    ],
+    [
+      "with PI values ranging from 7 to 1575.",
+      "with PI values ranging from 7 to 15{cite:75}."
+    ]
+  ],
+  "footer": {
+    "title": "USDA Loam Soil Texture Class — Scientific Analysis",
+    "note": "Based on the USDA NRCS Soil Survey Manual, the ROSETTA and HYPRES pedotransfer functions, and peer-reviewed literature in soil physics, geotechnics, biogeochemistry, and hydrology. Superscript numbers refer to the works cited below."
+  }
+}

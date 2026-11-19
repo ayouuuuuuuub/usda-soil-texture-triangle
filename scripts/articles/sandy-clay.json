@@ -1,0 +1,29 @@
+{
+  "source": "Sandy Clay USDA Soil Guide.md",
+  "intro": null,
+  "sections": [
+    { "label": "Introduction", "divider": null },
+    { "label": "Taxonomic Boundaries", "divider": "Classification" },
+    { "label": "Pedogenesis", "divider": "Formation" },
+    { "label": "Soil Structure", "divider": "Structure" },
+    { "label": "Soil Hydraulics", "divider": "Water" },
+    { "label": "Geomechanics", "divider": "Engineering" },
+    { "label": "Biogeochemistry", "divider": "Chemistry" },
+    { "label": "Agronomic Management", "divider": "Management" },
+    { "label": "Conclusion", "divider": "Synthesis", "h2": "Managing a Bimodal Soil" }
+  ],
+  "facts": [
+    ["≥ 35%", "Clay, with sand &gt; 45%"],
+    ["0.06", "cm/hr saturated hydraulic conductivity"],
+    ["23.90", "cm Green-Ampt wetting-front suction"],
+    ["10–50+", "kPa cohesion, saturated to dense"]
+  ],
+  "fixes": [
+    ["classification system in 19382.", "classification system in 1938{cite:2}."],
+    ["the Liquid Limit exceeds 5024.", "the Liquid Limit exceeds 50{cite:24}."]
+  ],
+  "footer": {
+    "title": "USDA Sandy Clay Soil Texture Class — Scientific Analysis",
+    "note": "Based on the USDA NRCS textural classification, the Green-Ampt and van Genuchten models, USCS/ASTM consistency limits, and peer-reviewed literature in pedology, soil physics, geotechnical engineering, and agronomy. Superscript numbers refer to the works cited below."
+  }
+}

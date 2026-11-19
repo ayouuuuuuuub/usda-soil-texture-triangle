@@ -1,102 +1,93 @@
-# USDA Soil Texture Triangle
+# Soil Logic
 
-A lightweight React and Vite web app for entering one or many soil samples, validating sand/silt/clay percentages, plotting valid samples on a USDA textural triangle, and assigning the 12 standard USDA texture classes.
+The Soil Logic website: a free USDA soil texture calculator, guides to the 12 texture classes, and the
+consulting portfolio of the practice behind it. React, TypeScript and Vite; every page is written to
+static HTML at build time.
 
-The rendered diagram can be exported as either PNG or SVG, including the currently represented valid samples and their labels.
+| Address | What it is | Source |
+|---|---|---|
+| `/` | The calculator: sample ledger, live texture triangle, results table | `src/home/` |
+| `/articles`, `/articles/<class>` | The soil guides | `src/articles/`, `src/data/articles.js` |
+| `/portfolio` | The consulting portfolio | `src/portfolio/` |
 
-## Project Structure
-
-```text
-.
-|-- index.html
-|-- package.json
-|-- src
-|   |-- App.tsx
-|   |-- main.tsx
-|   |-- soilTexture.ts
-|   `-- styles.css
-|-- tsconfig.json
-`-- vite.config.ts
-```
-
-## Sample Entry
-
-Manual rows auto-calculate the remaining texture fraction after two of the three percentages have been entered or edited. For example, entering sand and clay calculates silt as `100 - sand - clay`.
-
-CSV import appends rows to the current sample list. The file must include headers named:
-
-```csv
-sample,sand,clay
-Field A,40,20
-Field B,62,16
-```
-
-Pipe, semicolon, tab, and comma delimiters are accepted. Imported rows calculate silt automatically from `100 - sand - clay`.
-
-## USDA Classification Logic
-
-The app uses the 12 standard USDA textural classes: sand, loamy sand, sandy loam, loam, silt loam, silt, sandy clay loam, clay loam, silty clay loam, sandy clay, silty clay, and clay.
-
-`src/soilTexture.ts` contains the classification rules as direct inequalities over sand, silt, and clay percentages. Inputs are valid only when each fraction is between 0 and 100 and the total equals 100% within a small decimal tolerance. The sand and loamy sand rules use the standard USDA/NRCS modifier expressions `silt + 1.5 * clay` and `silt + 2 * clay`, which match the lower-left textural triangle boundaries.
-
-The triangle plot uses ternary coordinates with clay at the apex, sand at the lower-left vertex, and silt at the lower-right vertex:
-
-```ts
-x = (sand * sandVertex.x + silt * siltVertex.x + clay * clayVertex.x) / 100
-y = (sand * sandVertex.y + silt * siltVertex.y + clay * clayVertex.y) / 100
-```
-
-Class regions are drawn as USDA polygon regions, and plotted points use the same ternary coordinate transform as the triangle.
-
-## Official References
-
-- USDA NRCS Soil Texture Calculator: https://www.nrcs.usda.gov/resources/education-and-teaching-materials/soil-texture-calculator
-- NRCS Calculator Tools page, listing Soil Texture Calculator: https://www.nrcs.usda.gov/conservation-basics/natural-resource-concerns/soil/calculator-tools
-
-The NRCS calculator is used as the functional benchmark: it calculates texture classes from percent sand, silt, and clay and supports plotting multiple points.
-
-## Local Development
-
-Install dependencies:
+## Run it
 
 ```bash
 npm install
 ```
 
-Run the development server:
-
 ```bash
 npm run dev
 ```
-
-Build for production:
 
 ```bash
 npm run build
 ```
 
-Preview the production build locally:
+```bash
+npm run check
+```
 
 ```bash
 npm run preview
 ```
 
-## Deployment
+`build` type-checks, bundles, then prerenders every page (`scripts/prerender.mjs`). `check` reads the
+built pages and verifies titles, content, the calculator's functions, the classification rules, the
+pictures on disk, the sitemap and the hosting rewrites; run it after `build`.
 
-Vercel is the recommended host for this static Vite app.
+## Where things are
 
-1. Push the project to a Git repository.
-2. Import the repository in Vercel.
-3. Use the default Vite settings:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. Deploy.
+```text
+src/
+  main.tsx              browser entry of the app (attaches to the prerendered HTML)
+  entry-server.tsx      the app rendered to a string, for the prerender step
+  App.tsx               routes
+  soilTexture.ts        the USDA rules, class polygons and plot coordinates
+  site/                 header, footer, language, texts (i18n.ts), class cards, page titles (pages.js)
+  home/                 the calculator page, the triangle, the 19 triangle styles
+  articles/             the guides index, the article page, styles of the long-form articles
+  data/articles.js      the articles themselves
+  portfolio/            the portfolio page; all its words are in data.js
+  styles/               design tokens and shared styles (base.css), one file per page
+portfolio/index.html    the portfolio's own HTML shell and share tags
+public/                 photographs, drawings, tool logos, pitch deck, robots.txt, sitemap.xml
+scripts/                prerender, check, and the Python scripts that built the map and share image
+```
 
-Netlify works with the same build command and `dist` publish directory.
+## The calculator
 
-## Future Improvements
+- Rows auto-calculate the third fraction once two have been entered.
+- CSV import appends rows; it needs the headers `sample`, `sand`, `clay` (comma, semicolon, pipe or
+  tab separated). Silt is `100 - sand - clay`.
+- The triangle reads the composition under the pointer, with one guide line to each axis, and names
+  its class. Click to drop a sample there; drag a plotted point to change it. On a phone, tap to
+  read, then "Add as sample".
+- 19 triangle styles, point size, an outside legend, PNG and SVG export of the drawing, CSV export of
+  the results table. The reading overlay is never part of an export.
+- English and French; the choice is remembered in the browser.
 
-- CSV export of classified samples.
-- Optional sand fraction fields matching the more detailed NRCS calculator behavior.
-- Saved projects in local storage or a small hosted database.
-- Accessibility-focused keyboard shortcuts for larger field datasets.
+Classification follows the USDA NRCS textural triangle: `src/soilTexture.ts` holds the rules as
+inequalities over sand, silt and clay. Sand and loamy sand use the NRCS expressions
+`silt + 1.5 * clay` and `silt + 2 * clay`.
+
+References: [NRCS Soil Texture Calculator](https://www.nrcs.usda.gov/resources/education-and-teaching-materials/soil-texture-calculator).
+
+## Editing content
+
+- **Articles:** `src/data/articles.js` (the header comment explains the fields). A new article also
+  needs a line in `public/sitemap.xml` and its slug in the `/articles/(...)` rule of `vercel.json`.
+- **Portfolio:** `src/portfolio/data.js`. Each study has a `mix` (share of soil, data and territory
+  work, adding up to 100) that places it on the mixture diagram: these are estimates, adjust them.
+  Title and description for link previews are in `src/portfolio/meta.js` and must match
+  `portfolio/index.html` (`npm run check` verifies it).
+- **Interface texts and French:** `src/site/i18n.ts`.
+- **Colours and type:** the tokens at the top of `src/styles/base.css`.
+
+Photographs on the portfolio are stand-ins from Wikimedia Commons, credited in
+`public/portfolio/credits.html`, to be replaced by fieldwork photographs.
+
+## Hosting
+
+Vercel, Vite preset, build command `npm run build`, output `dist`. `vercel.json` sends each address to
+its prerendered file and anything unknown to `app.html` (an empty shell that shows the not-found page).

@@ -1,0 +1,28 @@
+{
+  "source": "USDA Silt Soil Texture Guide.md",
+  "intro": null,
+  "sections": [
+    { "label": "Introduction", "divider": null },
+    { "label": "Taxonomic Boundaries", "divider": "Classification" },
+    { "label": "Soil Hydraulics", "divider": "Water" },
+    { "label": "Hydraulic Modeling", "divider": "Modeling" },
+    { "label": "Pedotransfer Functions", "divider": "Parameters" },
+    { "label": "Geomechanics", "divider": "Engineering" },
+    { "label": "Erosion and Runoff", "divider": "Environment" },
+    { "label": "Pedogenesis", "divider": "Formation" }
+  ],
+  "facts": [
+    ["≥ 80%", "Silt-sized particles (clay &lt; 12%)"],
+    ["39–57", "mm plant-available water per 30 cm"],
+    ["25–30°", "Effective friction angle (loose to medium-dense)"],
+    ["~0 kPa", "Effective cohesion (drained)"]
+  ],
+  "fixes": [
+    ["gradients as low as 0.1 to 0.3116.", "gradients as low as 0.1 to 0.3{cite:116}."],
+    ["recalibrated as ROSETTA3 by", "recalibrated as ROSETTA⁠3 by"]
+  ],
+  "footer": {
+    "title": "USDA Silt Soil Texture Class — Scientific Analysis",
+    "note": "Based on USDA, WRB, MIT and USCS particle-size standards, the van Genuchten, Saxton-Rawls, HYPRES and ROSETTA models, the USLE erodibility framework, and peer-reviewed literature in soil physics, geotechnics, and pedology. Superscript numbers refer to the works cited below."
+  }
+}
