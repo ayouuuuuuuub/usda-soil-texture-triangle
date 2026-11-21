@@ -5,3 +5,6 @@ dist
 
 # tasteskill build cache (gate state, shots, original photo downloads)
 .taste-skill/
+
+# originals of the portfolio project images (web versions live in public/portfolio)
+project-images/

@@ -10,6 +10,7 @@
 // browser: everything that touches window or document lives in an effect.
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import MissionMap from './MissionMap.jsx';
+import { MOROCCO } from './moroccoMap.js';
 import { BRAKNA_PHASES, BRIEF, CERTS, DECK, EMAIL, FACTS, FIELDS, LANGUAGES, MAIL, METHOD, MIX_AXES, NOTES, PHOTO, PROJECTS, TOOL_GROUPS, TRAINING } from './data.js';
 import { meta } from './meta.js';
 import './portfolio.css';
@@ -341,6 +342,26 @@ function Mixture({ projects, open, hover, onHover, onProject }) {
   );
 }
 
+// A study with no fitting photograph shows where it took place: Morocco's regions in the mission map's
+// style, its own regions in sand, framed on them.
+function RegionTile({ regions, label }) {
+  const on = new Set(regions);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const r of MOROCCO.regions) if (on.has(r.id)) { const [x, y, w, h] = r.box; x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x + w); y1 = Math.max(y1, y + h); }
+  const pad = 0.6 * Math.max(x1 - x0, y1 - y0) + 40;
+  const view = [x0 - pad, y0 - pad, x1 - x0 + 2 * pad, y1 - y0 + 2 * pad].map(n => n.toFixed(1)).join(' ');
+  return (
+    <svg className="pf-tile" viewBox={view} preserveAspectRatio="xMidYMid slice" role="img" aria-label={label}>
+      <rect className="pf-tile__sea" x="-2000" y="-2000" width="5000" height="5000" />
+      {MOROCCO.regions.map(r => <path key={r.id} className="pf-tile__region" data-on={on.has(r.id) ? '' : undefined} d={r.d} />)}
+      <path className="pf-tile__coast" d={MOROCCO.outline} />
+      {MOROCCO.regions.filter(r => on.has(r.id)).map(r => (
+        <g key={r.id} transform={`translate(${r.at[0]} ${r.at[1]})`}><path className="pf-tile__peg" d="M0 -11L9.5 6H-9.5Z" /></g>
+      ))}
+    </svg>
+  );
+}
+
 function Work() {
   const [lens, setLens] = useState('mix');
   const [open, setOpen] = useState(null);
@@ -370,6 +391,17 @@ function Work() {
     if (here.length === 1) show(here[0].id);
     else if (open && !here.some(p => p.id === open)) setOpen(null);
   };
+  // a link to one study (/portfolio#project-nador) opens its row
+  useEffect(() => {
+    const open = () => {
+      const match = /^#project-(.+)$/.exec(window.location.hash);
+      if (match && PROJECTS.some(p => p.id === match[1])) show(match[1]);
+    };
+    open();
+    window.addEventListener('hashchange', open);
+    return () => window.removeEventListener('hashchange', open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const toggle = p => {
     const closing = open === p.id;
     setOpen(closing ? null : p.id);
@@ -415,10 +447,12 @@ function Work() {
                   <div className="pf-row__panel" id={`row-${p.id}`}>
                     <div className="pf-row__clip">
                       <div className="pf-row__body">
-                        <div className="pf-row__photo" data-art={p.art ? '' : undefined}>
-                          {p.art
-                            ? <img src={p.art} alt={p.alt} loading={isOpen || warm.has(p.id) ? undefined : 'lazy'} decoding="async" />
-                            : <Img name={p.photo} alt={p.alt} sizes="(max-width: 760px) 100vw, 560px" eager={isOpen || warm.has(p.id)} />}
+                        <div className="pf-row__photo" data-art={p.art ? '' : undefined} data-map={p.map ? '' : undefined}>
+                          {p.map
+                            ? <RegionTile regions={p.regions} label={p.alt} />
+                            : p.art
+                              ? <img src={p.art} srcSet={/-\d+\.webp$/.test(p.art) ? `${p.art.replace(/-\d+\.webp$/, '-640.webp')} 640w, ${p.art} ${/-(\d+)\.webp$/.exec(p.art)[1]}w` : undefined} sizes="(max-width: 760px) 100vw, 560px" alt={p.alt} loading={isOpen || warm.has(p.id) ? undefined : 'lazy'} decoding="async" />
+                              : <Img name={p.photo} wide={p.wide || 1200} alt={p.alt} sizes="(max-width: 760px) 100vw, 560px" eager={isOpen || warm.has(p.id)} />}
                         </div>
                         <div className="pf-row__text">
                           <ul className="pf-row__tags">{p.tags.map(t => <li key={t}>{t}</li>)}</ul>
@@ -473,8 +507,10 @@ function Brakna() {
             and Ould Birom, for SONADER and Mauritania’s Ministry of Agriculture and Food Sovereignty.
           </p>
           <dl className="pf-case__meta">
-            <div><dt className="mono">Scope</dt><dd>Soil study; methodology of the environmental and social impact assessment</dd></div>
+            <div><dt className="mono">Role</dt><dd>Head of the soil study; methodology of the environmental and social impact assessment</dd></div>
             <div><dt className="mono">Worked with</dt><dd>Hydraulic engineers, surveyors, geotechnicians and agro-economists</dd></div>
+            <div><dt className="mono">Field programme</dt><dd>85 auger holes, 30 soil pits and 170 samples at 0–30 and 30–60 cm</dd></div>
+            <div><dt className="mono">Results</dt><dd>Ten WRB soil types, FAO suitability classes by crop and five fertility sectors</dd></div>
           </dl>
         </div>
         <div className="pf-case__photo" data-rv="clip">

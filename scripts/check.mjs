@@ -100,12 +100,13 @@ try {
   assert.match(portfolio, /<h1[^>]*aria-label="I read the land before the project is drawn\."/);
   assert.match(portfolio, /href="mailto:contact@soil-logic.com"[^>]*>Email Ayoub/);
   assert.match(portfolio, /href="\/portfolio\/assets\/ayoub-professional-pitch-deck.pdf" download="Ayoub-Professional-Pitch-Deck.pdf"/);
-  for (const text of ['3,000 hectares', 'Every study is', 'PADERMO', 'CESAR II', 'The toolkit', 'State Engineer in Agronomy', 'contact@soil-logic.com']) {
+  for (const text of ['3,000 hectares', 'Every study is', 'PADERMO', 'Red palm weevil', 'Aït Hatem forest', 'Laâyoune-Sakia El Hamra', 'Regional coastal scheme of Marrakech-Safi', 'Power BI', 'The toolkit', 'State Engineer in Agronomy', 'contact@soil-logic.com']) {
     assert.ok(portfolio.includes(text), `prerendered portfolio lacks: ${text}`);
   }
   for (const project of data.PROJECTS) {
     assert.equal(project.mix.reduce((sum, n) => sum + n, 0), 100, `${project.id}: mix must add up to 100`);
     assert.ok(portfolio.includes(`id="project-${project.id}"`), `portfolio lacks project ${project.id}`);
+    if (project.map) { assert.ok(project.regions.length, `${project.id}: a map tile needs regions`); continue; }
     const picture = project.art ? `public${project.art}` : `public/portfolio/photos/${project.photo}-640.webp`;
     assert.ok(fs.existsSync(picture), `${project.id}: missing picture ${picture}`);
   }
